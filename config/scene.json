@@ -1,0 +1,16 @@
+{
+	"name": "Main",
+	"children": [
+		{ "id": "tile|-1,1",  "model": "tile/default", "position": [-1, 0,  1] },
+		{ "id": "tile|0,1",   "model": "tile/default", "position": [0,  0,  1] },
+		{ "id": "tile|1,1",   "model": "tile/default", "position": [1,  0,  1] },
+
+		{ "id": "tile|-1,0",  "model": "tile/default", "position": [-1, 0,  0] },
+		{ "id": "tile|0,0",   "model": "tile/default", "position": [0,  0,  0] },
+		{ "id": "tile|1,0",   "model": "tile/default", "position": [1,  0,  0] },
+
+		{ "id": "tile|-1,-1", "model": "tile/default", "position": [-1, 0, -1] },
+		{ "id": "tile|0,-1",  "model": "tile/default", "position": [0,  0, -1] },
+		{ "id": "tile|1,-1",  "model": "tile/default", "position": [1,  0, -1] }
+	]
+}
