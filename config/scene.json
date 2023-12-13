@@ -1,4 +1,16 @@
 {
 	"name": "main",
-	"children": []
+	"components": [
+		{
+			"name": "leaf",
+			"shader": "default"
+		}
+	],
+	"children": [
+		{
+			"type": "leaf",
+			"name": "leaf-1",
+			"position": [0.0, 0.0, 0.0]
+		}
+	]
 }

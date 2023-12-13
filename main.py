@@ -9,7 +9,7 @@ from src.core.shader import ShaderProgram
 from src.core.scene import Scene
 
 class Renderer():
-	def __init__(self, config):
+	def __init__(self, config, scene_config):
 		self.config = config
 		# init pygame modules
 		pg.init()
@@ -32,7 +32,7 @@ class Renderer():
 		# scene
 		self.light = Light(position = (0, 10, 0), color = (1, 1, 1))
 		self.camera = Camera(self, position = (3, 5, 3), yaw = -135, pitch = -45)
-		self.scene = Scene(self)
+		self.scene = Scene(self, scene_config)
 
 	def check_events(self):
 		for event in pg.event.get():
@@ -70,9 +70,13 @@ class Renderer():
 
 			self.delta_time = self.clock.tick(60)
 
-with open('config/window.json', 'r') as f:
-	app = Renderer(config = json.load(f))
-	app.run()
+with open('config/window.json', 'r') as window_config:
+	with open('config/scene.json', 'r') as scene_config:
+		app = Renderer(
+			config = json.load(window_config),
+			scene_config = json.load(scene_config),
+		)
+		app.run()
 
 
 

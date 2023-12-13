@@ -6,9 +6,10 @@ import glm
 from src.core.mesh import Mesh, MeshComponent
 
 class Scene():
-	def __init__(self, app):
+	def __init__(self, app, config):
 		self.app = app
 		self.ctx = app.ctx
+		self.config = config
 
 		self.components = {}
 		self.children = {}
@@ -18,20 +19,37 @@ class Scene():
 		self.on_init()
 
 	def on_init(self):
-		# tiles
-		self.components['tile_mesh_component'] = MeshComponent(
+		# debug tiles
+		self.components['tile'] = MeshComponent(
 			app = self.app,
 			shader_program = self.app.shaderProgram.programs['default'],
 			name = 'tile'
 		)
-		n, s = 30, 2
+		n, s = 50, 2
 		for x in range(-n, n, s):
 			for z in range(-n, n, s):
 				self.children[f'tile|{x},{z}'] = Mesh(
 					app = self.app,
-					mesh_component = self.components['tile_mesh_component'],
+					mesh_component = self.components['tile'],
 					position = (x, 0, z)
 				)
+
+		# make renderable vao's for individual mesh components
+		components = self.config['components']
+		for component in components:
+			self.components[component['name']] = MeshComponent(
+				app = self.app,
+				shader_program = self.app.shaderProgram.programs[component['shader']],
+				name = component['name']
+			)
+		children = self.config['children']
+		for child in children:
+			self.children[child['name']] = Mesh(
+				app = self.app,
+				mesh_component = self.components[child['type']],
+				name = child['name'],
+				position = child['position']
+			)
 
 	def check_event(self, event):
 		x, y = pg.mouse.get_pos()
