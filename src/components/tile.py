@@ -13,6 +13,6 @@ class Tile():
 
 	def update(self, time):
 		# fully rotate once every 5 seconds:
-		self.mesh,rotation = vec3(0, time / 5000, 0)
+		self.mesh.rotation = vec3(0, time / 5000, 0)
 		# update the mesh MVP to apply changes
 		self.mesh.update()

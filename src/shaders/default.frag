@@ -6,6 +6,7 @@ in vec2 coords;
 in vec3 color;
 in float borderSize;
 in vec3 borderColor;
+in vec2 uv_0;
 in vec3 normal;
 in vec3 fragPos;
 
@@ -17,6 +18,7 @@ struct Light {
 };
 
 uniform Light light;
+uniform sampler2D u_texture_0;
 uniform vec3 camPos;
 
 vec3 getLight(vec3 targetColor) {
@@ -53,7 +55,13 @@ vec3 addBorder(vec3 originalColor) {
 
 void main() {
     float gamma = 2.2;
+
     vec3 finalColor = color;
+    vec3 textureColor = texture(u_texture_0, uv_0).rgb;
+    if (length(textureColor) != 0) {
+        finalColor = textureColor;
+    }
+
     // texture gamma correction
     finalColor = pow(finalColor, vec3(gamma));
     // apply light

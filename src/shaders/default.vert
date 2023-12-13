@@ -8,6 +8,7 @@ out vec2 coords;
 out vec3 color;
 out float borderSize;
 out vec3 borderColor;
+out vec2 uv_0;
 out vec3 normal;
 out vec3 fragPos;
 
@@ -23,6 +24,7 @@ void main() {
     color = in_color;
     borderSize = in_borderSize;
     borderColor = in_borderColor;
+    uv_0 = in_textcoord_0;
     fragPos = vec3(m_model * vec4(in_position, 1.0));
     normal = mat3(transpose(inverse(m_model))) * normalize(in_normal);
 
