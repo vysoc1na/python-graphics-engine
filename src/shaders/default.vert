@@ -13,8 +13,6 @@ out vec3 normal;
 out vec3 fragPos;
 
 uniform vec3 in_color;
-uniform float in_borderSize;
-uniform vec3 in_borderColor;
 uniform mat4 m_proj;
 uniform mat4 m_view;
 uniform mat4 m_model;
@@ -22,8 +20,6 @@ uniform mat4 m_model;
 void main() {
     coords = in_textcoord_0;
     color = in_color;
-    borderSize = in_borderSize;
-    borderColor = in_borderColor;
     uv_0 = in_textcoord_0;
     fragPos = vec3(m_model * vec4(in_position, 1.0));
     normal = mat3(transpose(inverse(m_model))) * normalize(in_normal);

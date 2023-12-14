@@ -36,7 +36,6 @@ class Renderer():
 
 	def check_events(self):
 		for event in pg.event.get():
-			self.scene.check_event(event)
 			# event for program close
 			if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
 				self.scene.destroy()
@@ -51,13 +50,15 @@ class Renderer():
 		self.scene.render(self.time)
 		# swap buffers
 		pg.display.flip()
-		# show fps in caption
+
 		caption = self.config['caption']
-		# caption - ray position
-		rayX, rayZ = round(self.scene.cursor.x, 2), round(self.scene.cursor.z, 2)
-		caption = caption.replace('[rayX]', f'{rayX}').replace('[rayZ]', f'{rayZ}')
-		# captin - fps
+		# caption - cursor position
+		cursor = self.scene.children['cursor-1'].data.position
+		caption = caption.replace('[cursorX]', f'{cursor.x}')
+		caption = caption.replace('[cursorZ]', f'{cursor.z}')
+		# caption - fps
 		caption = caption.replace('[fps]', f'{round(self.clock.get_fps(), 2)}')
+		# render caption
 		pg.display.set_caption(caption)
 
 	def run(self):

@@ -1,5 +1,5 @@
 {
 	"width": 800,
 	"height": 600,
-	"caption": "cursor: [rayX], [rayZ] | fps:  [fps]"
+	"caption": "cursor: [cursorX], [cursorZ] | fps:  [fps]"
 }

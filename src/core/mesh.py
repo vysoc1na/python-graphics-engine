@@ -6,11 +6,12 @@ import json
 from src.core.vao import Vao
 
 class MeshComponent():
-	def __init__(self, app, shader_program, name = 'tile', texture_path = None):
+	def __init__(self, app, shader_program, name = 'tile', parent = None, texture_path = None):
 		self.app = app
 		self.ctx = app.ctx
 		self.name = name
 		self.shader_program = shader_program
+		self.parent = parent
 
 		if texture_path != None:
 			self.texture = self.get_texture(texture_path)
@@ -58,6 +59,7 @@ class Mesh():
 		scale = (1, 1, 1),
 		borderSize = 0,
 		borderColor = (0, 0, 0),
+		transparency = 1,
 	):
 		self.app = app
 		self.ctx = app.ctx
@@ -72,6 +74,8 @@ class Mesh():
 
 		self.set_border_size(borderSize)
 		self.set_border_color(borderColor)
+
+		self.set_transparency(transparency)
 
 		self.on_init()
 
@@ -93,8 +97,10 @@ class Mesh():
 		# MVP + camera position
 		self.update_mvp()
 		# borders
-		self.mesh.shader_program['in_borderSize'].write(self.border_size)
-		self.mesh.shader_program['in_borderColor'].write(self.border_color)
+		self.mesh.shader_program['borderSize'].write(self.border_size)
+		self.mesh.shader_program['borderColor'].write(self.border_color)
+		# transparency
+		self.mesh.shader_program['transparency'].write(self.transparency)
 
 	def update_mvp(self):
 		self.mesh.shader_program['m_model'].write(self.m_model)
@@ -130,6 +136,9 @@ class Mesh():
 
 	def set_border_color(self, color):
 		self.border_color = glm.vec3(color)
+
+	def set_transparency(self, transparency):
+		self.transparency = glm.float_(transparency)
 
 	def get_model_matrix(self):
 		m_model = glm.mat4()

@@ -5,6 +5,8 @@ import glm
 
 from src.core.mesh import Mesh, MeshComponent
 
+from src.components.cursor import Cursor
+
 class Scene():
 	def __init__(self, app, config):
 		self.app = app
@@ -19,13 +21,14 @@ class Scene():
 		self.on_init()
 
 	def on_init(self):
+		"""
 		# debug tiles
 		self.components['tile'] = MeshComponent(
 			app = self.app,
 			shader_program = self.app.shaderProgram.programs['default'],
 			name = 'tile'
 		)
-		n, s = 50, 2
+		n, s = 10, 2
 		for x in range(-n, n, s):
 			for z in range(-n, n, s):
 				self.children[f'tile|{x},{z}'] = Mesh(
@@ -33,6 +36,7 @@ class Scene():
 					mesh_component = self.components['tile'],
 					position = (x, 0, z)
 				)
+		"""
 
 		# make renderable vao's for individual mesh components
 		components = self.config['components']
@@ -40,44 +44,38 @@ class Scene():
 			self.components[component['name']] = MeshComponent(
 				app = self.app,
 				shader_program = self.app.shaderProgram.programs[component['shader']],
-				name = component['name']
+				name = component['name'],
+				parent = self.get_or(component, 'parent', None)
 			)
 		children = self.config['children']
-		for child in children:
-			self.children[child['name']] = Mesh(
+		for item in children:
+			mesh_constructor = Mesh(
 				app = self.app,
-				mesh_component = self.components[child['type']],
-				name = child['name'],
-				position = child['position']
+				mesh_component = self.components[item['type']],
+				name = item['name'],
+				position = self.get_or(item, 'position', [0, 0, 0]),
+				scale = self.get_or(item, 'scale', [1, 1, 1]),
 			)
+			self.children[item['name']] = self.assign_mesh_parent(mesh_constructor)
 
-	def check_event(self, event):
-		x, y = pg.mouse.get_pos()
-		self.cursor = self.screen_to_world(x, y, 0, 0)
-
-	def is_renderable(self, item):
-		cameraPosition =  self.app.camera.position
-		cameraRadius = self.app.camera.radius
-
-		if hasattr(item, 'position'):
-			position = item.position
+	@staticmethod
+	def get_or(item, key, default):
+		if key in item:
+			return item[key]
 		else:
-			position = item.data.position
+			return default
 
-		if position.x > cameraPosition.x - cameraRadius and position.x < cameraPosition.x + cameraRadius:
-			if position.z > cameraPosition.z - cameraRadius and position.z < cameraPosition.z + cameraRadius:
-				return True
-		return False
+	def assign_mesh_parent(self, mesh_constructor):
+		if mesh_constructor.mesh.parent == 'cursor':
+			return Cursor(self.app, mesh_constructor)
+
+		return mesh_constructor
+
+	# TODO: replace byc hunk implementation
+	def is_renderable(self, item):
+		return True
 
 	def render(self, t):
-		for _, key in enumerate(self.children):
-			if key.startswith('tile'):
-				item = self.children[key]
-				item.set_border_size(0)
-				if item.position.x - 1 < self.cursor.x and item.position.x + 1 > self.cursor.x:
-					if item.position.z - 1 < self.cursor.z and item.position.z + 1 > self.cursor.z:
-						item.set_border_size(0.01)
-
 		for _, key in enumerate(self.children):
 			item = self.children[key]
 			if self.is_renderable(item):

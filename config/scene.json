@@ -4,12 +4,32 @@
 		{
 			"name": "leaf",
 			"shader": "default"
+		},
+		{
+			"name": "tile",
+			"shader": "default"
+		},
+		{
+			"name": "cursor",
+			"parent": "cursor",
+			"shader": "default"
 		}
 	],
 	"children": [
 		{
+			"type": "tile",
+			"name": "tile-1",
+			"position": [0.0, 0.0, 0.0],
+			"scale": [20.0, 1.0, 20.0]
+		},
+		{
 			"type": "leaf",
 			"name": "leaf-1",
+			"position": [0.0, 0.0, 0.0]
+		},
+		{
+			"type": "cursor",
+			"name": "cursor-1",
 			"position": [0.0, 0.0, 0.0]
 		}
 	]

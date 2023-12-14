@@ -15,7 +15,6 @@ class Camera():
 		self.ASPECT_RATIO = app.window_size[0] / app.window_size[1]
 		self.SPEED = 0.005
 		self.SENSITIVITY = 0.1
-		self.RENDER_RADIUS = 20
 
 		# config
 		self.position = glm.vec3(position)
@@ -24,7 +23,6 @@ class Camera():
 		self.forward = glm.vec3(0, 0, -1)
 		self.yaw = yaw
 		self.pitch = pitch
-		self.radius = self.RENDER_RADIUS
 
 		# projection
 		self.m_view = self.get_view_matrix()
@@ -53,9 +51,10 @@ class Camera():
 		keys = pg.key.get_pressed()
 		velocity = self.SPEED * self.app.delta_time
 
+		# speed up movement 3 times with LEFT CTRL
 		if keys[pg.K_LCTRL]:
 			velocity *= 3
-
+		# movement of camera W A S D
 		if keys[pg.K_w]:
 			self.position += self.forward * velocity
 		if keys[pg.K_a]:
@@ -64,6 +63,7 @@ class Camera():
 			self.position -= self.forward * velocity
 		if keys[pg.K_d]:
 			self.position += self.right * velocity
+		# elevation of camera SHIFT SPACE
 		if keys[pg.K_LSHIFT]:
 			self.position -= self.up * velocity
 		if keys[pg.K_SPACE]:
@@ -73,8 +73,8 @@ class Camera():
 		rel_x, rel_y = pg.mouse.get_rel()
 
 		if pg.mouse.get_pressed()[0] == True:
-			self.yaw += rel_x * self.SENSITIVITY
-			self.pitch -= rel_y * self.SENSITIVITY
+			self.yaw -= rel_x * self.SENSITIVITY
+			self.pitch += rel_y * self.SENSITIVITY
 			self.pitch = max(-89, min(89, self.pitch))
 
 	def get_view_matrix(self):

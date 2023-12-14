@@ -4,8 +4,6 @@ layout (location = 0) out vec4 fragColor;
 
 in vec2 coords;
 in vec3 color;
-in float borderSize;
-in vec3 borderColor;
 in vec2 uv_0;
 in vec3 normal;
 in vec3 fragPos;
@@ -20,6 +18,9 @@ struct Light {
 uniform Light light;
 uniform sampler2D u_texture_0;
 uniform vec3 camPos;
+uniform float transparency;
+uniform float borderSize;
+uniform vec3 borderColor;
 
 vec3 getLight(vec3 targetColor) {
     vec3 Normal = normalize(normal);
@@ -69,5 +70,5 @@ void main() {
     // actual gamma correction
     finalColor = pow(finalColor, 1 / vec3(gamma));
 
-    fragColor = vec4(addBorder(finalColor), 1.0);
+    fragColor = vec4(addBorder(finalColor), transparency);
 }
