@@ -2,7 +2,9 @@ import pygame as pg
 import numpy as np
 import math
 import glm
+import json
 
+from src.core.chunk import Chunk
 from src.core.mesh import Mesh, MeshComponent
 
 from src.components.cursor import Cursor
@@ -16,94 +18,77 @@ class Scene():
 		self.components = {}
 		self.children = {}
 
-		self.cursor = glm.vec3(0, 0, 0)
+		self.chunks = {}
 
 		self.on_init()
 
 	def on_init(self):
-		"""
-		# debug tiles
-		self.components['tile'] = MeshComponent(
+		# mount chunks
+		for chunk in self.config['chunks']:
+			self.chunks[chunk['name']] = self.get_chunk_isntance(chunk)
+
+		self.chunks['chunk-0-0'].mount()
+		#self.chunks['chunk-0-1'].mount()
+
+		self.components['cursor'] = MeshComponent(
 			app = self.app,
-			shader_program = self.app.shaderProgram.programs['default'],
-			name = 'tile'
+			shader_program = self.app.shader_program.programs['default'],
+			name = 'cursor',
+			parent = 'cursor'
 		)
-		n, s = 10, 2
-		for x in range(-n, n, s):
-			for z in range(-n, n, s):
-				self.children[f'tile|{x},{z}'] = Mesh(
-					app = self.app,
-					mesh_component = self.components['tile'],
-					position = (x, 0, z)
-				)
-		"""
-
-		# make renderable vao's for individual mesh components
-		components = self.config['components']
-		for component in components:
-			self.components[component['name']] = MeshComponent(
+		self.children['cursor'] = Cursor(
+			app = self.app,
+			data = Mesh(
 				app = self.app,
-				shader_program = self.app.shaderProgram.programs[component['shader']],
-				name = component['name'],
-				parent = self.get_or(component, 'parent', None)
+				mesh_component = self.components['cursor'],
+				name = 'cursor',
 			)
-		children = self.config['children']
-		for item in children:
-			mesh_constructor = Mesh(
-				app = self.app,
-				mesh_component = self.components[item['type']],
-				name = item['name'],
-				position = self.get_or(item, 'position', [0, 0, 0]),
-				scale = self.get_or(item, 'scale', [1, 1, 1]),
-			)
-			self.children[item['name']] = self.assign_mesh_parent(mesh_constructor)
-
-	@staticmethod
-	def get_or(item, key, default):
-		if key in item:
-			return item[key]
-		else:
-			return default
-
-	def assign_mesh_parent(self, mesh_constructor):
-		if mesh_constructor.mesh.parent == 'cursor':
-			return Cursor(self.app, mesh_constructor)
-
-		return mesh_constructor
-
-	# TODO: replace byc hunk implementation
-	def is_renderable(self, item):
-		return True
+		)
 
 	def render(self, t):
+		camera_position =  self.app.camera.position
+
 		for _, key in enumerate(self.children):
-			item = self.children[key]
-			if self.is_renderable(item):
-				item.render()
+			self.children[key].render()
+
+		for _, key in enumerate(self.chunks):
+			chunk = self.chunks[key]
+			if self.is_chunk_in_radius(
+				chunk.position.x * self.config['size'],
+				chunk.position.z * self.config['size'],
+				camera_position.x,
+				camera_position.z,
+			):
+				chunk.mount()
+			else:
+				chunk.destroy()
+			chunk.render()
+
+	def is_chunk_in_radius(self, tile_x, tile_y, point_x, point_y):
+		# Calculate the squared distance between the tile center and the point
+		squared_distance = (tile_x - point_x)**2 + (tile_y - point_y)**2
+
+		# Check if the squared distance is within the squared radius
+		return squared_distance <= (self.config['size'] * 1.5)**2
+
+	def get_chunk_isntance(self, chunk):
+		name = chunk['name']
+		position = chunk['position']
+		with open(f'config/{name}.json', 'r') as chunk_config:
+			return Chunk(
+				app = self.app,
+				config = json.load(chunk_config),
+				name = name,
+				position = position,
+				size = self.config['size'],
+			 )
 
 	def destroy(self):
 		for _, key in enumerate(self.children):
 			self.children[key].destroy()
 
-	def get_depth(self, x, y):
-		depth_attachment = self.app.ctx.depth_texture((self.app.window_size[0], self.app.window_size[1]))
-		fbo = self.app.ctx.framebuffer(depth_attachment = depth_attachment)
-		fbo.clear()
-		fbo.use()
-
-		for _, key in enumerate(self.children):
-			item = self.children[key]
-			if self.is_renderable(item):
-				item.render()
-
-		depth_data = fbo.read(components = 1, dtype = 'f4', attachment = -1)
-		depth_array = np.frombuffer(depth_data, dtype=np.float32)
-
-		normalized_depth = (depth_array - np.min(depth_array)) / (np.max(depth_array) - np.min(depth_array))
-		clipped_depth = np.clip(normalized_depth, 0, 1)
-		depth_data_flipped = np.flipud(clipped_depth.reshape((self.app.window_size[1], self.app.window_size[0])))
-
-		return depth_data_flipped[y - 1, x - 1]
+		for _, key in enumerate(self.chunks):
+			self.chunks[key].destroy()
 
 	def screen_to_world(self, x, y, depth = 0, wy = 0):
 		xx = (2 * x) / self.app.window_size[0] - 1

@@ -1,36 +1,42 @@
 {
 	"name": "main",
-	"components": [
+	"size": 21,
+	"chunks": [
 		{
-			"name": "leaf",
-			"shader": "default"
+			"name": "chunk-0-0",
+			"position": [-1.0, 0.0, -1.0]
 		},
 		{
-			"name": "tile",
-			"shader": "default"
+			"name": "chunk-0-1",
+			"position": [0.0, 0.0, -1.0]
 		},
 		{
-			"name": "cursor",
-			"parent": "cursor",
-			"shader": "default"
-		}
-	],
-	"children": [
-		{
-			"type": "tile",
-			"name": "tile-1",
-			"position": [0.0, 0.0, 0.0],
-			"scale": [20.0, 1.0, 20.0]
+			"name": "chunk-0-2",
+			"position": [1.0, 0.0, -1.0]
 		},
 		{
-			"type": "leaf",
-			"name": "leaf-1",
+			"name": "chunk-1-0",
+			"position": [-1.0, 0.0, 0.0]
+		},
+		{
+			"name": "chunk-1-1",
 			"position": [0.0, 0.0, 0.0]
 		},
 		{
-			"type": "cursor",
-			"name": "cursor-1",
-			"position": [0.0, 0.0, 0.0]
+			"name": "chunk-1-2",
+			"position": [1.0, 0.0, 0.0]
+		},
+		{
+			"name": "chunk-2-0",
+			"position": [-1.0, 0.0, 1.0]
+		},
+		{
+			"name": "chunk-2-1",
+			"position": [0.0, 0.0, 1.0]
+		},
+		{
+			"name": "chunk-2-2",
+			"position": [1.0, 0.0, 1.0]
 		}
 	]
 }

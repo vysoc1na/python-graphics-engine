@@ -60,12 +60,14 @@ class Mesh():
 		borderSize = 0,
 		borderColor = (0, 0, 0),
 		transparency = 1,
+		color = None,
 	):
 		self.app = app
 		self.ctx = app.ctx
 
 		self.name = name
 		self.mesh = mesh_component
+		self.color = color
 
 		self.set_position(position)
 		self.set_rotation(rotation)
@@ -96,6 +98,8 @@ class Mesh():
 		self.m_model = self.get_model_matrix()
 		# MVP + camera position
 		self.update_mvp()
+		# lights
+		self.mesh.shader_program['light.position'].write(self.app.light.position)
 		# borders
 		self.mesh.shader_program['borderSize'].write(self.border_size)
 		self.mesh.shader_program['borderColor'].write(self.border_color)
@@ -114,9 +118,13 @@ class Mesh():
 
 		for component in self.mesh.data['components']:
 			# colors
-			self.mesh.shader_program['in_color'].write(glm.vec3(component['color']))
-			# render models
-			component['vao'].vao.render()
+			if self.color == None:
+				self.mesh.shader_program['in_color'].write(component['color'])
+			else:
+				self.mesh.shader_program['in_color'].write(glm.vec3(self.color))
+			# render models only when is on screen
+			if self.is_inside_frustum():
+				component['vao'].vao.render()
 
 	def destroy(self):
 		for component in self.mesh.data['components']:
@@ -152,3 +160,25 @@ class Mesh():
 		m_model = glm.scale(m_model, self.scale)
 
 		return m_model
+
+	def is_inside_frustum(self):
+		mvp_matrix = self.app.camera.m_proj * self.app.camera.m_view * self.m_model
+		frustum_limit = 4
+
+		for corner in [
+			glm.vec4(-1, -1, -1, 1),
+			glm.vec4(-1, -1, 1, 1),
+			glm.vec4(-1, 1, -1, 1),
+			glm.vec4(-1, 1, 1, 1),
+			glm.vec4(1, -1, -1, 1),
+			glm.vec4(1, -1, 1, 1),
+			glm.vec4(1, 1, -1, 1),
+			glm.vec4(1, 1, 1, 1)
+		]:
+			clip_space_corner = mvp_matrix * corner
+			if -frustum_limit <= clip_space_corner.x / clip_space_corner.w <= frustum_limit:
+				if -frustum_limit <= clip_space_corner.y / clip_space_corner.w <= frustum_limit:
+					if -frustum_limit <= clip_space_corner.z / clip_space_corner.w <= frustum_limit:
+						return True
+
+		return False

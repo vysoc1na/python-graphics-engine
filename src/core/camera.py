@@ -69,12 +69,16 @@ class Camera():
 		if keys[pg.K_SPACE]:
 			self.position += self.up * velocity
 
+		# keep light with camera
+		self.app.light.position.x = self.position.x
+		self.app.light.position.z = self.position.z
+
 	def rotate(self):
 		rel_x, rel_y = pg.mouse.get_rel()
 
 		if pg.mouse.get_pressed()[0] == True:
-			self.yaw -= rel_x * self.SENSITIVITY
-			self.pitch += rel_y * self.SENSITIVITY
+			self.yaw += rel_x * self.SENSITIVITY
+			self.pitch -= rel_y * self.SENSITIVITY
 			self.pitch = max(-89, min(89, self.pitch))
 
 	def get_view_matrix(self):

@@ -28,7 +28,7 @@ class Renderer():
 		self.time = 0
 		self.delta_time = 0
 		# shader program
-		self.shaderProgram = ShaderProgram(self.ctx)
+		self.shader_program = ShaderProgram(self.ctx)
 		# scene
 		self.light = Light(position = (0, 10, 0), color = (1, 1, 1))
 		self.camera = Camera(self, position = (3, 5, 3), yaw = -135, pitch = -45)
@@ -53,7 +53,7 @@ class Renderer():
 
 		caption = self.config['caption']
 		# caption - cursor position
-		cursor = self.scene.children['cursor-1'].data.position
+		cursor = self.scene.children['cursor'].data.position
 		caption = caption.replace('[cursorX]', f'{cursor.x}')
 		caption = caption.replace('[cursorZ]', f'{cursor.z}')
 		# caption - fps
