@@ -54,6 +54,16 @@ vec3 addBorder(vec3 originalColor) {
     return originalColor;
 }
 
+float getFogFactor(float d) {
+    const float FogMax = 40.0;
+    const float FogMin = 20.0;
+
+    if (d >= FogMax) return 1;
+    if (d <= FogMin) return 0;
+
+    return 1 - (FogMax - d) / (FogMax - FogMin);
+}
+
 void main() {
     float gamma = 2.2;
 
@@ -70,5 +80,9 @@ void main() {
     // actual gamma correction
     finalColor = pow(finalColor, 1 / vec3(gamma));
 
-    fragColor = vec4(addBorder(finalColor), transparency);
+    float d = distance(camPos, fragPos);
+    float alpha = getFogFactor(d);
+
+    // fragColor = vec4(addBorder(finalColor), alpha * transparency);
+    fragColor = vec4(mix(addBorder(finalColor), vec3(0, 0, 0), alpha), alpha + transparency);
 }

@@ -25,6 +25,9 @@ class Chunk():
 		self.is_mounted = False
 
 	def mount(self):
+		if self.is_mounted == True:
+			return
+
 		# make renderable vao's for individual mesh components
 		components = self.config['components']
 		for component in components:
@@ -52,30 +55,39 @@ class Chunk():
 			self.children[item['name']] = self.assign_mesh_parent(mesh_constructor)
 
 		# debug tiles
-		#n, s = 5, 2
+		#n, s = 10, 1
 		#for x in range(-n, n, s):
 		#	for z in range(-n, n, s):
 		#		position = glm.vec3(x, 0, z)
 		#		position.x += self.position.x * self.size
 		#		position.z += self.position.z * self.size
-		#		self.children[f'tile|{x},{z}'] = Mesh(
+		#		self.children[f'debug|{x},{z}'] = Mesh(
 		#			app = self.app,
 		#			mesh_component = self.components['leaf'],
-		#			position = position
+		#			position = position,
+		#			scale = [0.2, 0.2, 0.2]
 		#		)
 
 		self.is_mounted = True
 
 	def render(self):
-		if self.is_mounted == True:
-			for _, key in enumerate(self.children):
-				self.children[key].render()
+		if self.is_mounted == False:
+			return
+
+		for _, key in enumerate(self.children):
+			self.children[key].render()
 
 	def destroy(self):
-		if self.is_mounted == True:
-			for _, key in enumerate(self.children):
-				self.children[key].destroy()
-			self.is_mounted = False
+		if self.is_mounted == False:
+			return
+
+		for _, key in enumerate(self.children):
+			self.children[key].destroy()
+
+		self.components.clear()
+		self.children.clear()
+
+		self.is_mounted = False
 
 	def set_position(self, position):
 		self.position = glm.vec3(position)

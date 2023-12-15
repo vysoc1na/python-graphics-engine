@@ -31,7 +31,7 @@ class Renderer():
 		self.shader_program = ShaderProgram(self.ctx)
 		# scene
 		self.light = Light(position = (0, 10, 0), color = (1, 1, 1))
-		self.camera = Camera(self, position = (3, 5, 3), yaw = -135, pitch = -45)
+		self.camera = Camera(self, position = (3, 5, 3), yaw = -135, pitch = -15)
 		self.scene = Scene(self, scene_config)
 
 	def check_events(self):
@@ -54,8 +54,8 @@ class Renderer():
 		caption = self.config['caption']
 		# caption - cursor position
 		cursor = self.scene.children['cursor'].data.position
-		caption = caption.replace('[cursorX]', f'{cursor.x}')
-		caption = caption.replace('[cursorZ]', f'{cursor.z}')
+		caption = caption.replace('[cursorX]', f'{round(cursor.x, 1)}')
+		caption = caption.replace('[cursorZ]', f'{round(cursor.z, 1)}')
 		# caption - fps
 		caption = caption.replace('[fps]', f'{round(self.clock.get_fps(), 2)}')
 		# render caption

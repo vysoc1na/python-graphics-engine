@@ -69,6 +69,8 @@ class Camera():
 		if keys[pg.K_SPACE]:
 			self.position += self.up * velocity
 
+		self.position.y = 0.8
+
 		# keep light with camera
 		self.app.light.position.x = self.position.x
 		self.app.light.position.z = self.position.z

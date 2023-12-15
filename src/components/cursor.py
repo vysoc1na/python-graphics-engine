@@ -2,7 +2,7 @@ import pygame as pg
 import glm
 
 class Cursor():
-	def __init__(self, app, data, size = 1, height = 0):
+	def __init__(self, app, data, size = 1/5, height = 0):
 		self.app = app
 		self.data = data
 

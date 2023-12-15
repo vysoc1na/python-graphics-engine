@@ -82,49 +82,51 @@ class Mesh():
 		self.on_init()
 
 	def on_init(self):
-		# lights
-		self.mesh.shader_program['light.position'].write(self.app.light.position)
-		self.mesh.shader_program['light.Ia'].write(self.app.light.Ia)
-		self.mesh.shader_program['light.Id'].write(self.app.light.Id)
-		self.mesh.shader_program['light.Is'].write(self.app.light.Is)
-		# textures
+		self.update_uniforms({
+			'light.position': self.app.light.position,
+			'light.Ia': self.app.light.Ia,
+			'light.Id': self.app.light.Id,
+			'light.Is': self.app.light.Is,
+		})
+		# Textures
 		if self.mesh.texture != None:
 			self.mesh.shader_program['u_texture_0'] = 0
 			self.mesh.texture.use(location = 0)
-		# MVP + camera position
+		# Model View Projection
 		self.update_mvp()
 
 	def update(self):
 		self.m_model = self.get_model_matrix()
-		# MVP + camera position
 		self.update_mvp()
-		# lights
-		self.mesh.shader_program['light.position'].write(self.app.light.position)
-		# borders
-		self.mesh.shader_program['borderSize'].write(self.border_size)
-		self.mesh.shader_program['borderColor'].write(self.border_color)
-		# transparency
-		self.mesh.shader_program['transparency'].write(self.transparency)
+		self.update_uniforms({
+			'light.position': self.app.light.position,
+			'borderSize': self.border_size,
+			'borderColor': self.border_color,
+			'transparency': self.transparency,
+		})
 
 	def update_mvp(self):
-		self.mesh.shader_program['m_model'].write(self.m_model)
-		self.mesh.shader_program['m_view'].write(self.app.camera.m_view)
-		self.mesh.shader_program['m_proj'].write(self.app.camera.m_proj)
-		# camera position (for light calculations)
-		self.mesh.shader_program['camPos'].write(self.app.camera.position)
+		self.update_uniforms({
+			'm_model': self.m_model,
+			'm_view': self.app.camera.m_view,
+			'm_proj': self.app.camera.m_proj,
+			'camPos': self.app.camera.position,
+		})
 
 	def render(self):
+		if self.is_inside_frustum() == False:
+			return
+
 		self.update()
 
 		for component in self.mesh.data['components']:
-			# colors
-			if self.color == None:
-				self.mesh.shader_program['in_color'].write(component['color'])
-			else:
-				self.mesh.shader_program['in_color'].write(glm.vec3(self.color))
-			# render models only when is on screen
-			if self.is_inside_frustum():
-				component['vao'].vao.render()
+			# Pass colors to shader
+			color = self.color or component['color']
+			self.update_uniforms({
+				'in_color': glm.vec3(color)
+			})
+			# Render object to screen
+			component['vao'].vao.render()
 
 	def destroy(self):
 		for component in self.mesh.data['components']:
@@ -149,22 +151,29 @@ class Mesh():
 		self.transparency = glm.float_(transparency)
 
 	def get_model_matrix(self):
-		m_model = glm.mat4()
-		# translation
-		m_model = glm.translate(m_model, self.position)
-		# rotation
-		m_model = glm.rotate(m_model, self.rotation.x, glm.vec3(1, 0, 0))
-		m_model = glm.rotate(m_model, self.rotation.y, glm.vec3(0, 1, 0))
-		m_model = glm.rotate(m_model, self.rotation.z, glm.vec3(0, 0, 1))
-		# scale
-		m_model = glm.scale(m_model, self.scale)
+		translation_matrix = glm.translate(glm.mat4(1.0), self.position)
+		rotation_quaternion = glm.quat(glm.radians(self.rotation))
+		rotation_matrix = glm.mat4_cast(rotation_quaternion)
+		scale_matrix = glm.scale(glm.mat4(1.0), self.scale)
+
+		m_model = translation_matrix * rotation_matrix * scale_matrix
 
 		return m_model
 
 	def is_inside_frustum(self):
+		# Always render big obejcts
+		if self.scale.x > 5 and self.scale.z > 5:
+			return True
+		# Compare distance to camera
+		camera_distance = glm.length(self.app.camera.position - self.position)
+		if camera_distance > 21:
+			return False
+    	# Calculate the Model-View-Projection matrix
 		mvp_matrix = self.app.camera.m_proj * self.app.camera.m_view * self.m_model
-		frustum_limit = 4
+		# Set a frustum limit to determine if a point is inside the frustum
+		frustum_limit = 1
 
+		# Check each corner of the object's bounding box in clip space
 		for corner in [
 			glm.vec4(-1, -1, -1, 1),
 			glm.vec4(-1, -1, 1, 1),
@@ -175,10 +184,17 @@ class Mesh():
 			glm.vec4(1, 1, -1, 1),
 			glm.vec4(1, 1, 1, 1)
 		]:
+			# Transform the corner to clip space using the Model-View-Projection matrix
 			clip_space_corner = mvp_matrix * corner
+			clip_space_corner.w += 0.001 # division by zero
+			# Check if the transformed coordinates are within the frustum limits
 			if -frustum_limit <= clip_space_corner.x / clip_space_corner.w <= frustum_limit:
 				if -frustum_limit <= clip_space_corner.y / clip_space_corner.w <= frustum_limit:
 					if -frustum_limit <= clip_space_corner.z / clip_space_corner.w <= frustum_limit:
 						return True
 
 		return False
+
+	def update_uniforms(self, uniform_dict):
+		for name, value in uniform_dict.items():
+			self.mesh.shader_program[name].write(value)
