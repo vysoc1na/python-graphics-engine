@@ -7,5 +7,5 @@ class Light():
 
 		# intensity
 		self.Ia = self.color * 0.1 # ambient,  default: 0.1
-		self.Id = self.color * 1.5 # diffuse,  default: 0.8
-		self.Is = self.color * 0.1 # specular, default: 1.0
+		self.Id = self.color * 0.8 # diffuse,  default: 0.8
+		self.Is = self.color * 1.0 # specular, default: 1.0

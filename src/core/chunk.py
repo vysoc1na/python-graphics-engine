@@ -55,18 +55,18 @@ class Chunk():
 			self.children[item['name']] = self.assign_mesh_parent(mesh_constructor)
 
 		# debug tiles
-		#n, s = 10, 1
-		#for x in range(-n, n, s):
-		#	for z in range(-n, n, s):
-		#		position = glm.vec3(x, 0, z)
-		#		position.x += self.position.x * self.size
-		#		position.z += self.position.z * self.size
-		#		self.children[f'debug|{x},{z}'] = Mesh(
-		#			app = self.app,
-		#			mesh_component = self.components['leaf'],
-		#			position = position,
-		#			scale = [0.2, 0.2, 0.2]
-		#		)
+		n, s = 10, 1
+		for x in range(-n, n, s):
+			for z in range(-n, n, s):
+				position = glm.vec3(x, 0.2, z)
+				position.x += self.position.x * self.size
+				position.z += self.position.z * self.size
+				self.children[f'debug|{x},{z}'] = Mesh(
+					app = self.app,
+					mesh_component = self.components['leaf'],
+					position = position,
+					scale = [0.5, 0.5, 0.5],
+				)
 
 		self.is_mounted = True
 

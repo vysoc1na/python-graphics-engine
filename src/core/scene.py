@@ -67,7 +67,7 @@ class Scene():
 		squared_distance = (chunk_x - camera_x) ** 2 + (chunk_y - camera_y) ** 2
 
 		# Check if the squared distance is within the squared radius
-		return squared_distance <= (self.config['size'] * 1.25) ** 2
+		return squared_distance <= (self.config['size'] * 2) ** 2
 
 	def get_chunk_isntance(self, chunk):
 		name = chunk['name']

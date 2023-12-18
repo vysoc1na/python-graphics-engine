@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import moderngl as mgl
 import glm
 import json
 
@@ -126,7 +127,7 @@ class Mesh():
 				'in_color': glm.vec3(color)
 			})
 			# Render object to screen
-			component['vao'].vao.render()
+			component['vao'].vao.render(self.app.render_mode)
 
 	def destroy(self):
 		for component in self.mesh.data['components']:
@@ -161,8 +162,8 @@ class Mesh():
 		return m_model
 
 	def is_inside_frustum(self):
-		# Always render big obejcts
-		if self.scale.x > 5 and self.scale.z > 5:
+		# Always render tiles
+		if self.mesh.name == 'tile':
 			return True
 		# Compare distance to camera
 		camera_distance = glm.length(self.app.camera.position - self.position)

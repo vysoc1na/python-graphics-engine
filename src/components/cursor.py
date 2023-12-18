@@ -2,7 +2,7 @@ import pygame as pg
 import glm
 
 class Cursor():
-	def __init__(self, app, data, size = 1/5, height = 0):
+	def __init__(self, app, data, size = 1, height = 0):
 		self.app = app
 		self.data = data
 
@@ -33,7 +33,7 @@ class Cursor():
 		self.data.set_scale(scale)
 
 		# transparency
-		self.data.set_transparency(0.8)
+		self.data.set_transparency(0.9)
 
 		self.data.update()
 

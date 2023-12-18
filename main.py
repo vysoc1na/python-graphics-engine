@@ -15,6 +15,7 @@ class Renderer():
 		pg.init()
 		# global window size
 		self.window_size = (self.config['width'], self.config['height'])
+		self.render_mode = mgl.TRIANGLES
 		# opengl attribute setup
 		pg.display.gl_set_attribute(pg.GL_CONTEXT_MAJOR_VERSION, 3)
 		pg.display.gl_set_attribute(pg.GL_CONTEXT_MINOR_VERSION, 3)
@@ -30,7 +31,7 @@ class Renderer():
 		# shader program
 		self.shader_program = ShaderProgram(self.ctx)
 		# scene
-		self.light = Light(position = (0, 10, 0), color = (1, 1, 1))
+		self.light = Light(position = (0, 20, 0), color = (1, 1, 1))
 		self.camera = Camera(self, position = (3, 5, 3), yaw = -135, pitch = -15)
 		self.scene = Scene(self, scene_config)
 
@@ -42,10 +43,17 @@ class Renderer():
 				pg.quit()
 				sys.exit()
 
+			if event.type == pg.KEYDOWN and event.key == pg.K_t:
+				self.render_mode = mgl.TRIANGLES
+			if event.type == pg.KEYDOWN and event.key == pg.K_l:
+				self.render_mode = mgl.LINES
+			if event.type == pg.KEYDOWN and event.key == pg.K_p:
+				self.render_mode = mgl.POINTS
+
 	def render(self):
 		# clear frame buffer
 		self.ctx.screen.use()
-		self.ctx.clear(color = (0, 0, 0))
+		self.ctx.clear(color = (1, 1, 1))
 		# render scene
 		self.scene.render(self.time)
 		# swap buffers
