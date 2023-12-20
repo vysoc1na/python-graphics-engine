@@ -22,6 +22,8 @@ uniform float transparency;
 uniform float borderSize;
 uniform vec3 borderColor;
 
+uniform bool fogEnabled = false;
+
 vec3 getLight(vec3 targetColor) {
     vec3 Normal = normalize(normal);
 
@@ -55,8 +57,12 @@ vec3 addBorder(vec3 originalColor) {
 }
 
 float getFogFactor(float d) {
-    const float FogMax = 21.0;
-    const float FogMin = 18.0;
+    if (!fogEnabled) {
+        return 0;
+    }
+
+    const float FogMax = 32.0;
+    const float FogMin = 24.0;
 
     if (d >= FogMax) return 1;
     if (d <= FogMin) return 0;

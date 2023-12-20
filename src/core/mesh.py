@@ -167,7 +167,7 @@ class Mesh():
 			return True
 		# Compare distance to camera
 		camera_distance = glm.length(self.app.camera.position - self.position)
-		if camera_distance > 21:
+		if camera_distance > self.app.scene.config['size'] / 1.5:
 			return False
     	# Calculate the Model-View-Projection matrix
 		mvp_matrix = self.app.camera.m_proj * self.app.camera.m_view * self.m_model

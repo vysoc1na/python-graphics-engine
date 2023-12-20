@@ -8,6 +8,11 @@
 		{
 			"name": "tile",
 			"shader": "default"
+		},
+		{
+			"name": "player",
+			"shader": "default",
+			"parent": "model/player"
 		}
 	],
 	"children": [
@@ -15,8 +20,11 @@
 			"type": "tile",
 			"name": "tile-1",
 			"position": [0.0, 0.0, 0.0],
-			"scale": [10.5, 1.0, 10.5],
-			"color": [0.8, 0.8, 0.8]
+			"scale": [32.5, 1.0, 32.5]
+		},
+		{
+			"type": "player",
+			"name": "player-1"
 		}
 	]
 }

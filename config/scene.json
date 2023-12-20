@@ -1,42 +1,11 @@
 {
 	"name": "main",
-	"size": 21,
+	"size": 65,
 	"chunks": [
 		{
-			"name": "chunk-0-0",
-			"position": [-1.0, 0.0, -1.0]
-		},
-		{
-			"name": "chunk-0-1",
-			"position": [0.0, 0.0, -1.0]
-		},
-		{
-			"name": "chunk-0-2",
-			"position": [1.0, 0.0, -1.0]
-		},
-		{
-			"name": "chunk-1-0",
-			"position": [-1.0, 0.0, 0.0]
-		},
-		{
 			"name": "chunk-1-1",
-			"position": [0.0, 0.0, 0.0]
-		},
-		{
-			"name": "chunk-1-2",
-			"position": [1.0, 0.0, 0.0]
-		},
-		{
-			"name": "chunk-2-0",
-			"position": [-1.0, 0.0, 1.0]
-		},
-		{
-			"name": "chunk-2-1",
-			"position": [0.0, 0.0, 1.0]
-		},
-		{
-			"name": "chunk-2-2",
-			"position": [1.0, 0.0, 1.0]
+			"position": [0.0, 0.0, 0.0],
+			"color": [1, 0, 0]
 		}
 	]
 }

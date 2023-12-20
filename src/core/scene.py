@@ -32,7 +32,7 @@ class Scene():
 			app = self.app,
 			shader_program = self.app.shader_program.programs['default'],
 			name = 'cursor',
-			parent = 'cursor'
+			parent = 'model/cursor'
 		)
 		self.children['cursor'] = Cursor(
 			app = self.app,
@@ -56,11 +56,34 @@ class Scene():
 			chunk_x = chunk.position.x * self.config['size']
 			chunk_z = chunk.position.z * self.config['size']
 
-			if self.is_chunk_in_radius(chunk_x, chunk_z, camera_position.x, camera_position.z,):
+			if self.is_chunk_in_radius(chunk_x, chunk_z, camera_position.x, camera_position.z):
 				chunk.mount()
 				chunk.render()
 			else:
 				chunk.destroy()
+
+	def destroy(self):
+		# Destroy children that are direct descendants of Scene
+		for _, key in enumerate(self.children):
+			self.children[key].destroy()
+
+		# Destroy all chunk instances
+		for _, key in enumerate(self.chunks):
+			self.chunks[key].destroy()
+
+		self.components.clear()
+		self.children.clear()
+
+	def check_event(self, event):
+		for _, key in enumerate(self.children):
+			item = self.children[key]
+			check_event_method = getattr(item, 'check_event', None)
+
+			if callable(check_event_method):
+				self.children[key].check_event(event)
+
+		for _, key in enumerate(self.chunks):
+			self.chunks[key].check_event(event)
 
 	def is_chunk_in_radius(self, chunk_x, chunk_y, camera_x, camera_y):
 		# Calculate the squared distance between the chunk center and the camera
@@ -80,18 +103,6 @@ class Scene():
 				position = position,
 				size = self.config['size'],
 			 )
-
-	def destroy(self):
-		# Destroy children that are direct descendants of Scene
-		for _, key in enumerate(self.children):
-			self.children[key].destroy()
-
-		# Destroy all chunk instances
-		for _, key in enumerate(self.chunks):
-			self.chunks[key].destroy()
-
-		self.components.clear()
-		self.children.clear()
 
 	def screen_to_world(self, x, y, depth = 0, wy = 0):
 		# Normalize screen coordinates to the range [-1, 1]

@@ -43,6 +43,10 @@ class Renderer():
 				pg.quit()
 				sys.exit()
 
+			# pass event to models
+			self.scene.check_event(event)
+
+			# switch between render modes
 			if event.type == pg.KEYDOWN and event.key == pg.K_t:
 				self.render_mode = mgl.TRIANGLES
 			if event.type == pg.KEYDOWN and event.key == pg.K_l:
