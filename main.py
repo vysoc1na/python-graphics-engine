@@ -8,6 +8,8 @@ from src.core.light import Light
 from src.core.shader import ShaderProgram
 from src.core.scene import Scene
 
+from src.utils.queue import Queue
+
 class Renderer():
 	def __init__(self, config, scene_config):
 		self.config = config
@@ -34,6 +36,8 @@ class Renderer():
 		self.light = Light(position = (0, 40, 0), color = (1, 1, 1))
 		self.camera = Camera(self, position = (12, 32, 0), yaw = -180, pitch = -75)
 		self.scene = Scene(self, scene_config)
+		# actions
+		self.queue = Queue(self)
 
 	def check_events(self):
 		for event in pg.event.get():
@@ -82,6 +86,8 @@ class Renderer():
 			self.render()
 
 			self.delta_time = self.clock.tick(60)
+			# process queue
+			self.queue.tick()
 
 with open('config/window.json', 'r') as window_config:
 	with open('config/scene.json', 'r') as scene_config:

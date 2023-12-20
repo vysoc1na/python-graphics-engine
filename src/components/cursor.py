@@ -45,7 +45,7 @@ class Cursor():
 	def check_event(self, event):
 		scale_factor = glm.vec3(0.1, 0, 0.1)
 
-		if event.type == pg.MOUSEBUTTONDOWN:
+		if event.type == pg.MOUSEBUTTONDOWN and pg.mouse.get_pressed()[2]:
 			self.data.set_scale(self.scale - scale_factor)
 		if event.type == pg.MOUSEBUTTONUP:
 			self.data.set_scale(self.scale)

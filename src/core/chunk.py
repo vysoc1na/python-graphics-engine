@@ -1,3 +1,4 @@
+import pygame as pg
 import glm
 
 from src.core.mesh import Mesh, MeshComponent
@@ -5,6 +6,7 @@ from src.core.mesh import Mesh, MeshComponent
 from src.components import Cursor, Player
 
 from src.utils.astar import astar
+from src.utils.queue import Action
 
 class Chunk():
 	def __init__(
@@ -78,36 +80,15 @@ class Chunk():
 				col_index += 1
 			row_index += 1
 
-		path = astar(self.config['map'], (0, 0), (31, 31))
+		# self.set_path()
 
-		for item in path:
-			name = f'tile-path-{item[0]},{item[1]}'
-			position = glm.vec3(-size / 2, 0.2, size / 2)
-			position.x += self.position.x * self.size + 1 + item[0]
-			position.z += self.position.z * self.size - item[1]
-			self.children[name] = Mesh(
-				app = self.app,
-				mesh_component = self.components['tile'],
-				name = name,
-				position = position,
-				transparency = 0.5,
-				color = [0, 1, 0],
-			)
-
-
-		# debug tiles
-		#n, s = 20, 1
-		#for x in range(-n, n, s):
-		#	for z in range(-n, n, s):
-		#		position = glm.vec3(x, 0.2, z)
-		#		position.x += self.position.x * self.size
-		#		position.z += self.position.z * self.size
-		#		self.children[f'debug|{x},{z}'] = Mesh(
-		#			app = self.app,
-		#			mesh_component = self.components['leaf'],
-		#			position = position,
-		#			scale = [0.5, 0.5, 0.5],
-		#		)
+		self.children['pathfinder'] = Mesh(
+			app = self.app,
+			mesh_component = self.components['tile'],
+			name = name,
+			position = [-15, 0.1, 16],
+			color = [0, 0, 1],
+		)
 
 		self.is_mounted = True
 
@@ -115,14 +96,14 @@ class Chunk():
 		if self.is_mounted == False:
 			return
 
-		for _, key in enumerate(self.children):
+		for key in list(self.children):
 			self.children[key].render()
 
 	def destroy(self):
 		if self.is_mounted == False:
 			return
 
-		for _, key in enumerate(self.children):
+		for key in list(self.children):
 			self.children[key].destroy()
 
 		self.components.clear()
@@ -135,7 +116,14 @@ class Chunk():
 		if self.is_mounted == False:
 			return
 
-		for _, key in enumerate(self.children):
+		if event.type == pg.MOUSEBUTTONDOWN and pg.mouse.get_pressed()[2]:
+			position = self.children['pathfinder'].position
+			target = self.app.scene.children['cursor'].data.position
+			self.set_path(
+				(position.x, position.z), (target.x, target.z)
+			)
+
+		for key in list(self.children):
 			item = self.children[key]
 			check_event_method = getattr(item, 'check_event', None)
 
@@ -170,3 +158,54 @@ class Chunk():
 		depth_data_flipped = np.flipud(clipped_depth.reshape((self.app.window_size[1], self.app.window_size[0])))
 
 		return depth_data_flipped[y - 1, x - 1]
+
+	def set_path(self, source = (0, 0), target = (31, 31)):
+		self.app.queue.clear()
+
+		for key in list(self.children):
+			if self.children[key].name.startswith('tile-path-') == True:
+				del self.children[key]
+
+		if source == None:
+			return
+
+		size = self.app.scene.config['size']
+
+		source = (int(source[0] + 15), int((source[1] - 16) * -1))
+		target = (int(target[0] + 15), int((target[1] - 16) * -1))
+
+		self.path = astar(self.config['map'], source, target)
+
+		if self.path == None:
+			return
+
+		for item in self.path:
+			name = f'tile-path-{item[0]},{item[1]}'
+			position = glm.vec3(-size / 2, 0.1, size / 2)
+			position.x += self.position.x * self.size + 1 + item[0]
+			position.z += self.position.z * self.size - item[1]
+			self.children[name] = Mesh(
+			    app = self.app,
+			    mesh_component = self.components['tile'],
+			    name = name,
+			    position = position,
+			    transparency = 0.5,
+			    color = [0, 1, 0],
+			)
+
+		self.path_index = 0
+		def move(app):
+			node = self.path[self.path_index]
+			position = glm.vec3(-size / 2, 0.1, size / 2)
+			position.x += self.position.x * self.size + 1 + node[0]
+			position.z += self.position.z * self.size - node[1]
+
+			self.children['pathfinder'].position = position
+
+			self.path_index += 1
+
+			if self.path_index == len(self.path):
+				self.set_path(None)
+
+		for node in self.path:
+			self.app.queue.add(Action(move))
