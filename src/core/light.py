@@ -6,6 +6,6 @@ class Light():
 		self.color = glm.vec3(color)
 
 		# intensity
-		self.Ia = self.color * 0.1 # ambient,  default: 0.1
-		self.Id = self.color * 0.8 # diffuse,  default: 0.8
-		self.Is = self.color * 1.0 # specular, default: 1.0
+		self.Ia = self.color * 0.4 # ambient,  default: 0.1
+		self.Id = self.color * 1.0 # diffuse,  default: 0.8
+		self.Is = self.color * 0.0 # specular, default: 1.0

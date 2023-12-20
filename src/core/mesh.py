@@ -164,7 +164,7 @@ class Mesh():
 
 	def is_inside_frustum(self):
 		# Always render tiles
-		if self.mesh.name == 'chunk' or self.mesh.name == 'cursor':
+		if self.mesh.name == 'chunk' or self.mesh.name == 'tile' or self.mesh.name == 'cursor':
 			return True
 		# Compare distance to camera
 		camera_position = self.app.camera.position
@@ -174,7 +174,7 @@ class Mesh():
 		)
 		if camera_distance > self.app.scene.config['size'] / 1.5:
 			return False
-    	# Calculate the Model-View-Projection matrix
+		# Calculate the Model-View-Projection matrix
 		mvp_matrix = self.app.camera.m_proj * self.app.camera.m_view * self.m_model
 		# Set a frustum limit to determine if a point is inside the frustum
 		frustum_limit = 1

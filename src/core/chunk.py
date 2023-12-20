@@ -4,6 +4,8 @@ from src.core.mesh import Mesh, MeshComponent
 
 from src.components import Cursor, Player
 
+from src.utils.astar import astar
+
 class Chunk():
 	def __init__(
 		self,
@@ -53,6 +55,45 @@ class Chunk():
 				color = item.get('color', None),
 			)
 			self.children[item['name']] = self.assign_mesh_parent(mesh_constructor)
+
+		size = self.app.scene.config['size']
+		row_index = 0
+		for row in self.config['map']:
+			col_index = 0
+			for col in row:
+				if col == 1:
+					name = f'tile-{row_index},{col_index}'
+					position = glm.vec3(item.get('position', [-size / 2, 0.2, size / 2]))
+					position.x += self.position.x * self.size + 1 + row_index
+					position.z += self.position.z * self.size - col_index
+					self.children[name] = Mesh(
+						app = self.app,
+						mesh_component = self.components['tile'],
+						name = name,
+						position = position,
+						transparency = 0.5,
+						color = [1, 0, 0],
+					)
+
+				col_index += 1
+			row_index += 1
+
+		path = astar(self.config['map'], (0, 0), (31, 31))
+
+		for item in path:
+			name = f'tile-path-{item[0]},{item[1]}'
+			position = glm.vec3(-size / 2, 0.2, size / 2)
+			position.x += self.position.x * self.size + 1 + item[0]
+			position.z += self.position.z * self.size - item[1]
+			self.children[name] = Mesh(
+				app = self.app,
+				mesh_component = self.components['tile'],
+				name = name,
+				position = position,
+				transparency = 0.5,
+				color = [0, 1, 0],
+			)
+
 
 		# debug tiles
 		#n, s = 20, 1

@@ -1,0 +1,61 @@
+import heapq
+
+def heuristic(a, b):
+	return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+def astar(grid, start, end):
+	open_set = []
+	heapq.heappush(open_set, (0, start))
+
+	came_from = {}
+	cost_so_far = {start: 0}
+
+	while open_set:
+		current_cost, current_node = heapq.heappop(open_set)
+
+		if current_node == end:
+			path = reconstruct_path(came_from, start, end)
+			return path
+
+		for next_node in neighbors(grid, current_node):
+			if current_node[0] != next_node[0] and current_node[1] != next_node[1]:
+				new_cost = cost_so_far[current_node] + 1.5
+			else:
+				new_cost = cost_so_far[current_node] + 1
+
+			if next_node not in cost_so_far or new_cost < cost_so_far[next_node]:
+				cost_so_far[next_node] = new_cost
+				priority = new_cost + heuristic(end, next_node)
+				heapq.heappush(open_set, (priority, next_node))
+				came_from[next_node] = current_node
+
+	return None
+
+def neighbors(grid, node):
+	x, y = node
+	potential_neighbors = [
+		(x-1, y), (x+1, y), (x, y-1), (x, y+1),
+		(x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)
+	]
+	valid_neighbors = []
+
+	for i, j in potential_neighbors:
+		if 0 <= i < len(grid) and 0 <= j < len(grid[0]) and grid[i][j] == 0:
+			# Check if the diagonal movement is valid by ensuring all adjacent tiles are walkable
+			if all(grid[i][j] == 0 for i, j in [(x, j), (i, y)]) and grid[i][j] == 0:
+				valid_neighbors.append((i, j))
+
+	return valid_neighbors
+
+def reconstruct_path(came_from, start, end):
+	current = end
+	path = []
+
+	while current != start:
+		path.append(current)
+		current = came_from[current]
+
+	path.append(start)
+	path.reverse()
+
+	return path
