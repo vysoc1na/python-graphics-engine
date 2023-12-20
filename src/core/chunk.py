@@ -42,8 +42,8 @@ class Chunk():
 		for item in children:
 			# update position relative to chunk position
 			position = glm.vec3(item.get('position', [0, 0, 0]))
-			position.x += self.position.x * self.size
-			position.z += self.position.z * self.size
+			position.x += self.position.x * self.size + 0.5
+			position.z += self.position.z * self.size + 0.5
 			mesh_constructor = Mesh(
 				app = self.app,
 				mesh_component = self.components[item['type']],

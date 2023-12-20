@@ -3,6 +3,7 @@ import numpy as np
 import moderngl as mgl
 import glm
 import json
+import math
 
 from src.core.vao import Vao
 
@@ -163,10 +164,14 @@ class Mesh():
 
 	def is_inside_frustum(self):
 		# Always render tiles
-		if self.mesh.name == 'tile':
+		if self.mesh.name == 'chunk' or self.mesh.name == 'cursor':
 			return True
 		# Compare distance to camera
-		camera_distance = glm.length(self.app.camera.position - self.position)
+		camera_position = self.app.camera.position
+		position = self.position
+		camera_distance = math.sqrt(
+			math.pow(camera_position.x - position.x, 2) + math.pow(camera_position.z - position.z, 2)
+		)
 		if camera_distance > self.app.scene.config['size'] / 1.5:
 			return False
     	# Calculate the Model-View-Projection matrix

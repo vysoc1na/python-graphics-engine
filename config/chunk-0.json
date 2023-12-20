@@ -1,0 +1,19 @@
+{
+	"name": "chunk-1-1",
+	"components": [
+		{
+			"name": "tile",
+			"shader": "default"
+		},
+		{
+			"name": "chunk",
+			"shader": "default"
+		}
+	],
+	"children": [
+		{
+			"type": "chunk",
+			"name": "chunk-ground"
+		}
+	]
+}
