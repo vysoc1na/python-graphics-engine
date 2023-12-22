@@ -1,5 +1,6 @@
 import pygame as pg
 import glm
+import math
 
 from src.core.mesh import Mesh, MeshComponent
 
@@ -60,35 +61,31 @@ class Chunk():
 
 		size = self.app.scene.config['size']
 		row_index = 0
-		for row in self.config['map']:
-			col_index = 0
-			for col in row:
-				if col == 1:
-					name = f'tile-{row_index},{col_index}'
-					position = glm.vec3(item.get('position', [-size / 2, 0.2, size / 2]))
-					position.x += self.position.x * self.size + 1 + row_index
-					position.z += self.position.z * self.size - col_index
-					self.children[name] = Mesh(
-						app = self.app,
-						mesh_component = self.components['tile'],
-						name = name,
-						position = position,
-						transparency = 0.5,
-						color = [1, 0, 0],
-					)
+		for point in self.config['obstacles']:
+			name = f'tile-{point[0]},{point[1]}'
+			position = glm.vec3(item.get('position', [-size / 2, 0.2, size / 2]))
+			position.x += self.position.x * self.size + 1 + point[0]
+			position.z += self.position.z * self.size - point[1]
+			self.children[name] = Mesh(
+				app = self.app,
+				mesh_component = self.components['tile'],
+				name = name,
+				position = position,
+				transparency = 0.5,
+				color = [1, 0, 0],
+			)
 
-				col_index += 1
-			row_index += 1
-
-		# self.set_path()
-
+		position = glm.vec3(-15, 0.1, 16)
 		self.children['pathfinder'] = Mesh(
 			app = self.app,
 			mesh_component = self.components['tile'],
 			name = name,
-			position = [-15, 0.1, 16],
+			position = position,
 			color = [0, 0, 1],
 		)
+		self.app.camera.position = position + glm.vec3(0, 8, 0)
+		self.app.camera.yaw = 270
+		self.app.camera.pitch = -75
 
 		self.is_mounted = True
 
@@ -174,7 +171,7 @@ class Chunk():
 		source = (int(source[0] + 15), int((source[1] - 16) * -1))
 		target = (int(target[0] + 15), int((target[1] - 16) * -1))
 
-		self.path = astar(self.config['map'], source, target)
+		self.path = astar(self.config['obstacles'], source, target)
 
 		if self.path == None:
 			return
@@ -185,12 +182,12 @@ class Chunk():
 			position.x += self.position.x * self.size + 1 + item[0]
 			position.z += self.position.z * self.size - item[1]
 			self.children[name] = Mesh(
-			    app = self.app,
-			    mesh_component = self.components['tile'],
-			    name = name,
-			    position = position,
-			    transparency = 0.5,
-			    color = [0, 1, 0],
+				app = self.app,
+				mesh_component = self.components['tile'],
+				name = name,
+				position = position,
+				transparency = 0.5,
+				color = [0, 1, 0],
 			)
 
 		self.path_index = 0
@@ -202,6 +199,14 @@ class Chunk():
 
 			self.children['pathfinder'].position = position
 
+			direction = glm.normalize(self.app.camera.position - position)
+			rotation = self.direction_to_rotation(direction)
+			print(direction, rotation)
+
+			#self.app.camera.position = position + glm.vec3(0, 8, 0)
+			#self.app.camera.yaw = rotation
+			#self.app.camera.pitch = -75
+
 			self.path_index += 1
 
 			if self.path_index == len(self.path):
@@ -209,3 +214,12 @@ class Chunk():
 
 		for node in self.path:
 			self.app.queue.add(Action(move))
+
+	def direction_to_rotation(self, direction_vector):
+		direction_vector = direction_vector * glm.vec3(-1, 1, 1)
+		direction = glm.normalize(glm.vec3(direction_vector))
+
+		angle = math.atan2(direction.x, direction.z)
+		angle_degrees = glm.degrees(angle)
+
+		return angle_degrees + 270

@@ -1,9 +1,12 @@
 import heapq
+import numpy as np
 
 def heuristic(a, b):
 	return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-def astar(grid, start, end):
+def astar(obstacles, start, end):
+	obstacles = np.array(obstacles)
+	obstacles = tuple(map(tuple, obstacles))
 	open_set = []
 	heapq.heappush(open_set, (0, start))
 
@@ -17,7 +20,7 @@ def astar(grid, start, end):
 			path = reconstruct_path(came_from, start, end)
 			return path
 
-		for next_node in neighbors(grid, current_node):
+		for next_node in neighbors(obstacles, current_node):
 			if current_node[0] != next_node[0] and current_node[1] != next_node[1]:
 				new_cost = cost_so_far[current_node] + 1.5
 			else:
@@ -31,7 +34,7 @@ def astar(grid, start, end):
 
 	return None
 
-def neighbors(grid, node):
+def neighbors(obstacles, node):
 	x, y = node
 	potential_neighbors = [
 		(x-1, y), (x+1, y), (x, y-1), (x, y+1),
@@ -40,9 +43,10 @@ def neighbors(grid, node):
 	valid_neighbors = []
 
 	for i, j in potential_neighbors:
-		if 0 <= i < len(grid) and 0 <= j < len(grid[0]) and grid[i][j] == 0:
-			# Check if the diagonal movement is valid by ensuring all adjacent tiles are walkable
-			if all(grid[i][j] == 0 for i, j in [(x, j), (i, y)]) and grid[i][j] == 0:
+		if (i, j) not in obstacles:
+			if (i != x and j != y) and ((i, y) not in obstacles and (x, j) not in obstacles):
+				valid_neighbors.append((i, j))
+			elif i == x or j == y:
 				valid_neighbors.append((i, j))
 
 	return valid_neighbors
