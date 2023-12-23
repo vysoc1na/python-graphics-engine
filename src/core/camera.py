@@ -23,6 +23,11 @@ class Camera():
 		self.forward = glm.vec3(0, 0, -1)
 		self.yaw = yaw
 		self.pitch = pitch
+		# rotate aorund target
+		self.target = None
+		self.radius = 14
+		self.theta = -yaw
+		self.phi = -pitch
 
 		# projection
 		self.m_view = self.get_view_matrix()
@@ -76,13 +81,40 @@ class Camera():
 	def rotate(self):
 		rel_x, rel_y = pg.mouse.get_rel()
 
-		if pg.mouse.get_pressed()[0] == True:
-			self.yaw += rel_x * self.SENSITIVITY
-			self.pitch -= rel_y * self.SENSITIVITY
-			self.pitch = max(-89, min(89, self.pitch))
+		if pg.mouse.get_pressed()[0]:
+			self.theta += rel_x * self.SENSITIVITY
+			self.phi -= rel_y * self.SENSITIVITY
+			self.phi = max(-89, min(89, self.phi))
+
+			if self.target is not None:
+				theta = math.radians(self.theta)
+				phi = math.radians(self.phi)
+
+				self.position.x = self.target.x + self.radius * glm.cos(phi) * glm.cos(theta)
+				self.position.y = self.target.y + self.radius * glm.sin(phi)
+				self.position.z = self.target.z + self.radius * glm.cos(phi) * glm.sin(theta)
+
+				self.look_at(self.target)
+			else:
+				self.yaw += rel_x * self.SENSITIVITY
+				self.pitch -= rel_y * self.SENSITIVITY
+				self.pitch = max(-89, min(89, self.pitch))
 
 	def get_view_matrix(self):
 		return glm.lookAt(self.position, self.position + self.forward, self.up)
 
 	def get_projection_matrix(self):
 		return glm.perspective(self.FOV, self.ASPECT_RATIO, self.NEAR, self.FAR)
+
+	def look_at(self, target):
+		target = glm.vec3(target)
+		forward = glm.normalize(target - self.position) + glm.vec3(0.01, 0.01, 0.01) * glm.vec3(3, 3, 3)
+		self.yaw = math.degrees(np.arctan2(forward.z, forward.x))
+		self.pitch = math.degrees(np.arcsin(forward.y))
+
+		if self.target == None:
+			self.theta = -self.yaw
+			self.phi = -self.pitch
+
+	def move_to(self, target):
+		self.position = target

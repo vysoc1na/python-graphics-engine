@@ -34,7 +34,7 @@ class Renderer():
 		self.shader_program = ShaderProgram(self.ctx)
 		# scene
 		self.light = Light(position = (0, 40, 0), color = (1, 1, 1))
-		self.camera = Camera(self, position = (12, 32, 0), yaw = -180, pitch = -75)
+		self.camera = Camera(self, position = (0, 0, 0), yaw = 145, pitch = -43)
 		self.scene = Scene(self, scene_config)
 		# actions
 		self.queue = Queue(self)
