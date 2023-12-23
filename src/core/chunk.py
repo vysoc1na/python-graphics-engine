@@ -83,9 +83,11 @@ class Chunk():
 			position = position,
 			color = [0, 0, 1],
 		)
-		self.app.camera.move_to(position + glm.vec3(0, 10, 10))
+		self.app.camera.position = position + glm.vec3(0, 10, 10)
+		self.app.camera.new_position = position + glm.vec3(0, 10, 10)
 		self.app.camera.look_at(position)
 		self.app.camera.target = position
+		self.app.camera.new_target = position
 
 		self.is_mounted = True
 
@@ -172,7 +174,6 @@ class Chunk():
 		target = (int(target[0] + 15), int((target[1] - 16) * -1))
 
 		self.path = astar(self.config['obstacles'], source, target)
-		self.path.pop(0)
 
 		if self.path == None:
 			return
@@ -194,12 +195,13 @@ class Chunk():
 		self.path_index = 0
 		def move(app):
 			node = self.path[self.path_index]
+
 			position = glm.vec3(-size / 2, 0.1, size / 2)
 			position.x += self.position.x * self.size + 1 + node[0]
 			position.z += self.position.z * self.size - node[1]
 
 			original_position = self.children['pathfinder'].position
-			self.children['pathfinder'].position = position
+			self.children['pathfinder'].new_position = position
 
 			direction = glm.normalize(original_position - position)
 			rotation = self.direction_to_rotation(direction)
@@ -210,8 +212,7 @@ class Chunk():
 				position.z + direction.z * 10
 			)
 			self.app.camera.move_to(self.app.camera.position - direction)
-			#self.app.camera.look_at(position)
-			self.app.camera.target = position
+			self.app.camera.new_target = position
 
 			self.path_index += 1
 

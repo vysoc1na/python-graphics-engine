@@ -98,6 +98,10 @@ class Mesh():
 		self.update_mvp()
 
 	def update(self):
+		if glm.length(self.new_position - self.position) > 0:
+			new_position = self.position + (self.new_position - self.position) * (self.app.delta_time / 250)
+			self.position = new_position
+
 		self.m_model = self.get_model_matrix()
 		self.update_mvp()
 		self.update_uniforms({
@@ -136,6 +140,7 @@ class Mesh():
 
 	def set_position(self, position):
 		self.position = glm.vec3(position)
+		self.new_position = glm.vec3(position)
 
 	def set_rotation(self, rotation):
 		self.rotation = glm.vec3(rotation)

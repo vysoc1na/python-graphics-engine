@@ -7,6 +7,10 @@ def heuristic(a, b):
 def astar(obstacles, start, end):
 	obstacles = np.array(obstacles)
 	obstacles = tuple(map(tuple, obstacles))
+
+	if end in obstacles:
+		return None
+
 	open_set = []
 	heapq.heappush(open_set, (0, start))
 
@@ -37,8 +41,8 @@ def astar(obstacles, start, end):
 def neighbors(obstacles, node):
 	x, y = node
 	potential_neighbors = [
-		(x-1, y), (x+1, y), (x, y-1), (x, y+1),
-		(x-1, y-1), (x+1, y-1), (x-1, y+1), (x+1, y+1)
+		(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1),
+		(x - 1, y - 1), (x + 1, y - 1), (x - 1, y + 1), (x + 1, y + 1)
 	]
 	valid_neighbors = []
 
@@ -59,7 +63,8 @@ def reconstruct_path(came_from, start, end):
 		path.append(current)
 		current = came_from[current]
 
-	path.append(start)
-	path.reverse()
+	if start in path:
+		path.remove(start)
 
+	path.reverse()
 	return path

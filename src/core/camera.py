@@ -28,6 +28,9 @@ class Camera():
 		self.radius = 14
 		self.theta = -yaw
 		self.phi = -pitch
+		# transitions
+		self.new_position = glm.vec3(position)
+		self.new_target = None
 
 		# projection
 		self.m_view = self.get_view_matrix()
@@ -36,6 +39,20 @@ class Camera():
 	def update(self):
 		self.move()
 		self.rotate()
+
+		transition_step = (self.app.delta_time / 500)
+
+		if self.target is not None:
+			target_diff = glm.length(self.target - self.new_target)
+			if target_diff > 0.1:
+				self.target = self.target + (self.new_target - self.target) * transition_step
+
+		position_diff = glm.length(self.new_position - self.position)
+		if position_diff > 0.1:
+			self.position = self.position + (self.new_position - self.position) * transition_step
+			if self.target is not None:
+				self.look_at(self.target)
+
 
 		self.update_vectors()
 		self.m_view = self.get_view_matrix()
@@ -56,32 +73,47 @@ class Camera():
 		keys = pg.key.get_pressed()
 		velocity = self.SPEED * self.app.delta_time
 
-		# speed up movement 3 times with LEFT CTRL
-		if keys[pg.K_LCTRL]:
-			velocity *= 3
-		# movement of camera W A S D
-		if keys[pg.K_w]:
-			self.position += self.forward * velocity
-		if keys[pg.K_a]:
-			self.position -= self.right * velocity
-		if keys[pg.K_s]:
-			self.position -= self.forward * velocity
-		if keys[pg.K_d]:
-			self.position += self.right * velocity
-		# elevation of camera SHIFT SPACE
-		if keys[pg.K_LSHIFT]:
-			self.position -= self.up * velocity
-		if keys[pg.K_SPACE]:
-			self.position += self.up * velocity
+		if self.target == None:
+			# speed up movement 3 times with LEFT CTRL
+			if keys[pg.K_LCTRL]:
+				velocity *= 3
+			# movement of camera W A S D
+			if keys[pg.K_w]:
+				self.position += self.forward * velocity
+			if keys[pg.K_a]:
+				self.position -= self.right * velocity
+			if keys[pg.K_s]:
+				self.position -= self.forward * velocity
+			if keys[pg.K_d]:
+				self.position += self.right * velocity
+			# elevation of camera SHIFT SPACE
+			if keys[pg.K_LSHIFT]:
+				self.position -= self.up * velocity
+			if keys[pg.K_SPACE]:
+				self.position += self.up * velocity
+		else:
+			if keys[pg.K_a]:
+				self.rotate(x = self.SENSITIVITY * 100)
+			if keys[pg.K_d]:
+				self.rotate(x = -self.SENSITIVITY * 100)
+			if keys[pg.K_w]:
+				self.rotate(y = -self.SENSITIVITY * 100)
+			if keys[pg.K_s]:
+				self.rotate(y = self.SENSITIVITY * 100)
 
 		# keep light with camera
 		self.app.light.position.x = self.position.x
 		self.app.light.position.z = self.position.z
 
-	def rotate(self):
+	def rotate(self, x = 0, y = 0):
 		rel_x, rel_y = pg.mouse.get_rel()
 
-		if pg.mouse.get_pressed()[0]:
+		if abs(x) > 0:
+			rel_x = x
+		if abs(y) > 0:
+			rel_y = y
+
+		if pg.mouse.get_pressed()[0] or (abs(x) > 0 or abs(y) > 0):
 			self.theta += rel_x * self.SENSITIVITY
 			self.phi -= rel_y * self.SENSITIVITY
 			self.phi = max(-89, min(89, self.phi))
@@ -90,11 +122,9 @@ class Camera():
 				theta = math.radians(self.theta)
 				phi = math.radians(self.phi)
 
-				self.position.x = self.target.x + self.radius * glm.cos(phi) * glm.cos(theta)
-				self.position.y = self.target.y + self.radius * glm.sin(phi)
-				self.position.z = self.target.z + self.radius * glm.cos(phi) * glm.sin(theta)
-
-				self.look_at(self.target)
+				self.new_position.x = self.target.x + self.radius * glm.cos(phi) * glm.cos(theta)
+				self.new_position.y = self.target.y + self.radius * glm.sin(phi)
+				self.new_position.z = self.target.z + self.radius * glm.cos(phi) * glm.sin(theta)
 			else:
 				self.yaw += rel_x * self.SENSITIVITY
 				self.pitch -= rel_y * self.SENSITIVITY
@@ -117,4 +147,4 @@ class Camera():
 			self.phi = -self.pitch
 
 	def move_to(self, target):
-		self.position = target
+		self.new_position = target
