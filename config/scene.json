@@ -1,6 +1,6 @@
 {
 	"name": "main",
-	"size": 32,
+	"size": 64,
 	"chunks": [
 		{
 			"name": "chunk-0",

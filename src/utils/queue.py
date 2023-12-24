@@ -2,7 +2,7 @@ class Queue():
 	def __init__(self, app):
 		self.app = app
 		self.elapsed_time_since_last_action = 0
-		self.time_to_single_action = 500
+		self.time_to_single_action = 250
 
 		self.actions = []
 

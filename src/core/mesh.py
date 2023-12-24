@@ -169,7 +169,7 @@ class Mesh():
 
 	def is_inside_frustum(self):
 		# Always render tiles
-		if self.mesh.name == 'chunk' or self.mesh.name == 'tile' or self.mesh.name == 'cursor':
+		if self.mesh.name == 'tile' or self.mesh.name == 'cursor' or self.mesh.name == 'maze':
 			return True
 		# Compare distance to camera
 		camera_position = self.app.camera.position

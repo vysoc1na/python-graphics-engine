@@ -60,34 +60,35 @@ class Chunk():
 			self.children[item['name']] = self.assign_mesh_parent(mesh_constructor)
 
 		size = self.app.scene.config['size']
-		row_index = 0
-		for point in self.config['obstacles']:
-			name = f'tile-{point[0]},{point[1]}'
-			position = glm.vec3(item.get('position', [-size / 2, 0.2, size / 2]))
-			position.x += self.position.x * self.size + 1 + point[0]
-			position.z += self.position.z * self.size - point[1]
-			self.children[name] = Mesh(
-				app = self.app,
-				mesh_component = self.components['tile'],
-				name = name,
-				position = position,
-				transparency = 0.5,
-				color = [1, 0, 0],
-			)
+		#row_index = 0
+		#for point in self.config['obstacles']:
+		#	name = f'tile-{point[0]},{point[1]}'
+		#	position = glm.vec3(item.get('position', [-size / 2, 1.1, size / 2]))
+		#	position.x += self.position.x * self.size + 1 + point[0]
+		#	position.z += self.position.z * self.size - point[1]
+		#	self.children[name] = Mesh(
+		#		app = self.app,
+		#		mesh_component = self.components['tile'],
+		#		name = name,
+		#		position = position,
+		#		transparency = 0.5,
+		#		color = [1, 0, 0],
+		#	)
 
-		position = glm.vec3(-15, 0.1, 16)
+		position = glm.vec3(33, 0.2, 32)
 		self.children['pathfinder'] = Mesh(
 			app = self.app,
 			mesh_component = self.components['tile'],
-			name = name,
+			name = 'pathfinder',
 			position = position,
-			color = [0, 0, 1],
+			color = [0, 0, 0],
+			scale = [0.5, 0.5, 0.5],
 		)
 		self.app.camera.position = position + glm.vec3(0, 10, 10)
 		self.app.camera.new_position = position + glm.vec3(0, 10, 10)
 		self.app.camera.look_at(position)
-		self.app.camera.target = position
-		self.app.camera.new_target = position
+		#self.app.camera.target = position
+		#self.app.camera.new_target = position
 
 		self.is_mounted = True
 
@@ -169,9 +170,10 @@ class Chunk():
 			return
 
 		size = self.app.scene.config['size']
+		half_size = size / 2
 
-		source = (int(source[0] + 15), int((source[1] - 16) * -1))
-		target = (int(target[0] + 15), int((target[1] - 16) * -1))
+		source = (int(source[0] + half_size - 1), int((source[1] - half_size) * -1))
+		target = (int(target[0] + half_size - 1), int((target[1] - half_size) * -1))
 
 		self.path = astar(self.config['obstacles'], source, target)
 
@@ -180,7 +182,7 @@ class Chunk():
 
 		for item in self.path:
 			name = f'tile-path-{item[0]},{item[1]}'
-			position = glm.vec3(-size / 2, 0.1, size / 2)
+			position = glm.vec3(-size / 2, 0.2, size / 2)
 			position.x += self.position.x * self.size + 1 + item[0]
 			position.z += self.position.z * self.size - item[1]
 			self.children[name] = Mesh(
@@ -188,8 +190,9 @@ class Chunk():
 				mesh_component = self.components['tile'],
 				name = name,
 				position = position,
-				transparency = 0.5,
-				color = [0, 1, 0],
+				transparency = 0.1,
+				color = [0, 0, 0],
+				scale = [0.2, 0.2, 0.2],
 			)
 
 		self.path_index = 0
@@ -211,8 +214,8 @@ class Chunk():
 				10,
 				position.z + direction.z * 10
 			)
-			self.app.camera.move_to(self.app.camera.position - direction)
-			self.app.camera.new_target = position
+			#self.app.camera.move_to(self.app.camera.position - direction)
+			#self.app.camera.new_target = position
 
 			self.path_index += 1
 

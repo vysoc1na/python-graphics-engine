@@ -4,6 +4,8 @@ import pygame as pg
 import moderngl as mgl
 import numpy as np
 
+from src.utils.transition import transition_vec3, transition_float
+
 class Camera():
 	def __init__(self, app, position = (0, 0, 5), yaw = -90, pitch = 0):
 		self.app = app
@@ -13,7 +15,7 @@ class Camera():
 		self.NEAR = 0.1
 		self.FAR = 100
 		self.ASPECT_RATIO = app.window_size[0] / app.window_size[1]
-		self.SPEED = 0.005
+		self.SPEED = 0.01
 		self.SENSITIVITY = 0.1
 
 		# config
@@ -31,6 +33,10 @@ class Camera():
 		# transitions
 		self.new_position = glm.vec3(position)
 		self.new_target = None
+		self.rel_x = 0
+		self.new_rel_x = 0
+		self.rel_y = 0
+		self.new_rel_y = 0
 
 		# projection
 		self.m_view = self.get_view_matrix()
@@ -40,19 +46,20 @@ class Camera():
 		self.move()
 		self.rotate()
 
-		transition_step = (self.app.delta_time / 500)
+		delta_time = self.app.delta_time
 
-		if self.target is not None:
-			target_diff = glm.length(self.target - self.new_target)
-			if target_diff > 0.1:
-				self.target = self.target + (self.new_target - self.target) * transition_step
+		# animate values between each other
+		self.target = transition_vec3(self.target, self.new_target, delta_time, 250)
+		self.position = transition_vec3(self.position, self.new_position, delta_time, 250)
+		# look at target at the end of animations
 
-		position_diff = glm.length(self.new_position - self.position)
-		if position_diff > 0.1:
-			self.position = self.position + (self.new_position - self.position) * transition_step
-			if self.target is not None:
-				self.look_at(self.target)
+		self.rel_x = transition_float(self.rel_x, self.new_rel_x, delta_time, 100)
+		self.rel_y = transition_float(self.rel_y, self.new_rel_y, delta_time, 100)
+		self.new_rel_x = transition_float(self.new_rel_x, 0, delta_time, 100)
+		self.new_rel_y = transition_float(self.new_rel_y, 0, delta_time, 100)
 
+		if self.target != None:
+			self.look_at(self.target)
 
 		self.update_vectors()
 		self.m_view = self.get_view_matrix()
@@ -93,13 +100,13 @@ class Camera():
 				self.position += self.up * velocity
 		else:
 			if keys[pg.K_a]:
-				self.rotate(x = self.SENSITIVITY * 100)
+				self.rotate(x = self.SENSITIVITY * 50)
 			if keys[pg.K_d]:
-				self.rotate(x = -self.SENSITIVITY * 100)
+				self.rotate(x = -self.SENSITIVITY * 50)
 			if keys[pg.K_w]:
-				self.rotate(y = -self.SENSITIVITY * 100)
+				self.rotate(y = -self.SENSITIVITY * 50)
 			if keys[pg.K_s]:
-				self.rotate(y = self.SENSITIVITY * 100)
+				self.rotate(y = self.SENSITIVITY * 50)
 
 		# keep light with camera
 		self.app.light.position.x = self.position.x
@@ -108,14 +115,18 @@ class Camera():
 	def rotate(self, x = 0, y = 0):
 		rel_x, rel_y = pg.mouse.get_rel()
 
-		if abs(x) > 0:
-			rel_x = x
-		if abs(y) > 0:
-			rel_y = y
-
 		if pg.mouse.get_pressed()[0] or (abs(x) > 0 or abs(y) > 0):
-			self.theta += rel_x * self.SENSITIVITY
-			self.phi -= rel_y * self.SENSITIVITY
+			self.new_rel_x = rel_x
+			self.new_rel_y = rel_y
+
+			if abs(x) > 0:
+				self.new_rel_x = x
+			if abs(y) > 0:
+				self.new_rel_y = y
+
+		if abs(self.rel_x) > 0 or abs(self.rel_y) > 0:
+			self.theta += self.rel_x * self.SENSITIVITY
+			self.phi -= self.rel_y * self.SENSITIVITY
 			self.phi = max(-89, min(89, self.phi))
 
 			if self.target is not None:
@@ -126,8 +137,8 @@ class Camera():
 				self.new_position.y = self.target.y + self.radius * glm.sin(phi)
 				self.new_position.z = self.target.z + self.radius * glm.cos(phi) * glm.sin(theta)
 			else:
-				self.yaw += rel_x * self.SENSITIVITY
-				self.pitch -= rel_y * self.SENSITIVITY
+				self.yaw += self.rel_x * self.SENSITIVITY
+				self.pitch -= self.rel_y * self.SENSITIVITY
 				self.pitch = max(-89, min(89, self.pitch))
 
 	def get_view_matrix(self):
