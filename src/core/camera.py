@@ -27,7 +27,7 @@ class Camera():
 		self.pitch = pitch
 		# rotate aorund target
 		self.target = None
-		self.radius = 14
+		self.radius = 6
 		self.theta = -yaw
 		self.phi = -pitch
 		# transitions
@@ -49,16 +49,19 @@ class Camera():
 		delta_time = self.app.delta_time
 
 		# animate values between each other
-		self.target = transition_vec3(self.target, self.new_target, delta_time, 250)
-		self.position = transition_vec3(self.position, self.new_position, delta_time, 250)
+		self.target = transition_vec3(self.target, self.new_target, delta_time, 300)
+		self.position = transition_vec3(self.position, self.new_position, delta_time, 300)
 		# look at target at the end of animations
 
-		self.rel_x = transition_float(self.rel_x, self.new_rel_x, delta_time, 100)
-		self.rel_y = transition_float(self.rel_y, self.new_rel_y, delta_time, 100)
-		self.new_rel_x = transition_float(self.new_rel_x, 0, delta_time, 100)
-		self.new_rel_y = transition_float(self.new_rel_y, 0, delta_time, 100)
+		self.rel_x = transition_float(self.rel_x, self.new_rel_x, delta_time, 300)
+		self.rel_y = transition_float(self.rel_y, self.new_rel_y, delta_time, 300)
+		self.new_rel_x = transition_float(self.new_rel_x, 0, delta_time, 300)
+		self.new_rel_y = transition_float(self.new_rel_y, 0, delta_time, 300)
 
 		if self.target != None:
+			# fix camera postions
+			self.rotate(0.00001, 0.00001)
+			# look at the target
 			self.look_at(self.target)
 
 		self.update_vectors()

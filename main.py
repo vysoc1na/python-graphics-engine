@@ -61,7 +61,7 @@ class Renderer():
 	def render(self):
 		# clear frame buffer
 		self.ctx.screen.use()
-		self.ctx.clear(color = (1, 1, 1))
+		self.ctx.clear(color = (0, 0, 0))
 		# render scene
 		self.scene.render(self.time)
 		# swap buffers

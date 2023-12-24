@@ -1,6 +1,6 @@
 import glm
 
-TRANSITION_ERROR_MARGIN = 0.1
+TRANSITION_ERROR_MARGIN = 0.01
 
 def transition_vec3(original_value, new_value, delta_time, duration):
 	if original_value == None:

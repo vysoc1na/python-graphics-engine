@@ -6,6 +6,7 @@ import json
 import math
 
 from src.core.vao import Vao
+from src.utils.transition import transition_vec3, transition_float
 
 class MeshComponent():
 	def __init__(self, app, shader_program, name = 'tile', parent = None, texture_path = None):
@@ -98,9 +99,9 @@ class Mesh():
 		self.update_mvp()
 
 	def update(self):
-		if glm.length(self.new_position - self.position) > 0:
-			new_position = self.position + (self.new_position - self.position) * (self.app.delta_time / 250)
-			self.position = new_position
+		delta_time = self.app.delta_time
+
+		self.position = transition_vec3(self.position, self.new_position, delta_time, 300)
 
 		self.m_model = self.get_model_matrix()
 		self.update_mvp()
