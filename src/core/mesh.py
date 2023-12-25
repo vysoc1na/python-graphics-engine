@@ -3,8 +3,10 @@ import numpy as np
 import moderngl as mgl
 import glm
 import json
+import math
 
 from src.core.vao import Vao
+from src.utils.transition import transition_vec3, transition_float
 
 class MeshComponent():
 	def __init__(self, app, shader_program, name = 'tile', parent = None, texture_path = None):
@@ -97,6 +99,10 @@ class Mesh():
 		self.update_mvp()
 
 	def update(self):
+		delta_time = self.app.delta_time
+
+		self.position = transition_vec3(self.position, self.new_position, delta_time, 300)
+
 		self.m_model = self.get_model_matrix()
 		self.update_mvp()
 		self.update_uniforms({
@@ -135,6 +141,7 @@ class Mesh():
 
 	def set_position(self, position):
 		self.position = glm.vec3(position)
+		self.new_position = glm.vec3(position)
 
 	def set_rotation(self, rotation):
 		self.rotation = glm.vec3(rotation)
@@ -163,13 +170,17 @@ class Mesh():
 
 	def is_inside_frustum(self):
 		# Always render tiles
-		if self.mesh.name == 'tile':
+		if self.mesh.name == 'tile' or self.mesh.name == 'cursor' or self.mesh.name == 'maze':
 			return True
 		# Compare distance to camera
-		camera_distance = glm.length(self.app.camera.position - self.position)
+		camera_position = self.app.camera.position
+		position = self.position
+		camera_distance = math.sqrt(
+			math.pow(camera_position.x - position.x, 2) + math.pow(camera_position.z - position.z, 2)
+		)
 		if camera_distance > self.app.scene.config['size'] / 1.5:
 			return False
-    	# Calculate the Model-View-Projection matrix
+		# Calculate the Model-View-Projection matrix
 		mvp_matrix = self.app.camera.m_proj * self.app.camera.m_view * self.m_model
 		# Set a frustum limit to determine if a point is inside the frustum
 		frustum_limit = 1

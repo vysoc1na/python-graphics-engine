@@ -128,5 +128,5 @@ class Scene():
 		wx = nn[0] + (ff[0] - nn[0]) * t
 		wz = nn[2] + (ff[2] - nn[2]) * t
 
-    	# Return the final world coordinates
+		# Return the final world coordinates
 		return glm.vec3(wx, wy, wz)

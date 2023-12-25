@@ -1,11 +1,10 @@
 {
 	"name": "main",
-	"size": 65,
+	"size": 64,
 	"chunks": [
 		{
-			"name": "chunk-1-1",
-			"position": [0.0, 0.0, 0.0],
-			"color": [1, 0, 0]
+			"name": "chunk-0",
+			"position": [0.0, 0.0, 0.0]
 		}
 	]
 }

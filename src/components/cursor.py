@@ -31,11 +31,19 @@ class Cursor():
 			world_coords.y,
 			self.round_to_grid(world_coords.z, self.size),
 		)
+
+		# colors
+		obstacles = self.app.scene.chunks['chunk-0'].config['obstacles']
+		obstacles = tuple(map(tuple, obstacles))
+		if (position.x + 32 - 1, (position.z - 32) * -1) in obstacles:
+			position.y = 1
+			self.data.color = glm.vec3(1, 0, 0)
+		else:
+			position.y = 0.2
+			self.data.color = glm.vec3(0, 0, 0)
+
 		# set new properties
 		self.data.set_position(position)
-
-		# transparency
-		self.data.set_transparency(0.9)
 
 		self.data.update()
 
@@ -45,7 +53,7 @@ class Cursor():
 	def check_event(self, event):
 		scale_factor = glm.vec3(0.1, 0, 0.1)
 
-		if event.type == pg.MOUSEBUTTONDOWN:
+		if event.type == pg.MOUSEBUTTONDOWN and pg.mouse.get_pressed()[2]:
 			self.data.set_scale(self.scale - scale_factor)
 		if event.type == pg.MOUSEBUTTONUP:
 			self.data.set_scale(self.scale)

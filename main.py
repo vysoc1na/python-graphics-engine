@@ -8,6 +8,8 @@ from src.core.light import Light
 from src.core.shader import ShaderProgram
 from src.core.scene import Scene
 
+from src.utils.queue import Queue
+
 class Renderer():
 	def __init__(self, config, scene_config):
 		self.config = config
@@ -24,6 +26,8 @@ class Renderer():
 		pg.display.set_mode(self.window_size, flags = pg.OPENGL | pg.DOUBLEBUF) # | pg.FULLSCREEN
 		self.ctx = mgl.create_context()
 		self.ctx.enable(mgl.DEPTH_TEST | mgl.BLEND)
+		self.ctx.blend_func = mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA
+		self.ctx.blend_equation = mgl.FUNC_ADD
 		# global clock
 		self.clock = pg.time.Clock()
 		self.time = 0
@@ -31,9 +35,11 @@ class Renderer():
 		# shader program
 		self.shader_program = ShaderProgram(self.ctx)
 		# scene
-		self.light = Light(position = (0, 20, 0), color = (1, 1, 1))
-		self.camera = Camera(self, position = (3, 5, 3), yaw = -135, pitch = -15)
+		self.light = Light(position = (0, 40, 0), color = (1, 1, 1))
+		self.camera = Camera(self, position = (0, 0, 0), yaw = 145, pitch = -43)
 		self.scene = Scene(self, scene_config)
+		# actions
+		self.queue = Queue(self)
 
 	def check_events(self):
 		for event in pg.event.get():
@@ -57,7 +63,7 @@ class Renderer():
 	def render(self):
 		# clear frame buffer
 		self.ctx.screen.use()
-		self.ctx.clear(color = (1, 1, 1))
+		self.ctx.clear(color = (1, 1, 1, 0))
 		# render scene
 		self.scene.render(self.time)
 		# swap buffers
@@ -82,6 +88,8 @@ class Renderer():
 			self.render()
 
 			self.delta_time = self.clock.tick(60)
+			# process queue
+			self.queue.tick()
 
 with open('config/window.json', 'r') as window_config:
 	with open('config/scene.json', 'r') as scene_config:
