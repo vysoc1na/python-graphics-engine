@@ -26,6 +26,8 @@ class Renderer():
 		pg.display.set_mode(self.window_size, flags = pg.OPENGL | pg.DOUBLEBUF) # | pg.FULLSCREEN
 		self.ctx = mgl.create_context()
 		self.ctx.enable(mgl.DEPTH_TEST | mgl.BLEND)
+		self.ctx.blend_func = mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA
+		self.ctx.blend_equation = mgl.FUNC_ADD
 		# global clock
 		self.clock = pg.time.Clock()
 		self.time = 0
@@ -61,7 +63,7 @@ class Renderer():
 	def render(self):
 		# clear frame buffer
 		self.ctx.screen.use()
-		self.ctx.clear(color = (0, 0, 0))
+		self.ctx.clear(color = (1, 1, 1, 0))
 		# render scene
 		self.scene.render(self.time)
 		# swap buffers

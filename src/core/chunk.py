@@ -90,6 +90,16 @@ class Chunk():
 
 		self.is_mounted = True
 
+		self.children['finish'] = Mesh(
+			app = self.app,
+			mesh_component = self.components['tile'],
+			name = 'finish',
+			position = (-31, 1, -30),
+			scale = [0.8, 1, 0.8],
+			color = [0, 1, 0],
+			transparency = 0.5,
+		)
+
 	def render(self):
 		if self.is_mounted == False:
 			return
@@ -175,7 +185,6 @@ class Chunk():
 
 		source = (int(source[0] + half_size - 1), int((source[1] - half_size) * -1))
 		target = (int(target[0] + half_size - 1), int((target[1] - half_size) * -1))
-
 
 		self.path = astar(self.config['obstacles'], source, target, 10)
 

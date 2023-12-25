@@ -102,13 +102,13 @@ class Camera():
 			if keys[pg.K_SPACE]:
 				self.position += self.up * velocity
 		else:
-			if keys[pg.K_a]:
+			if keys[pg.K_LEFT] or keys[pg.K_a]:
 				self.rotate(x = self.SENSITIVITY * 50)
-			if keys[pg.K_d]:
+			if keys[pg.K_RIGHT] or keys[pg.K_d]:
 				self.rotate(x = -self.SENSITIVITY * 50)
-			if keys[pg.K_w]:
+			if keys[pg.K_UP] or keys[pg.K_w]:
 				self.rotate(y = -self.SENSITIVITY * 50)
-			if keys[pg.K_s]:
+			if keys[pg.K_DOWN] or keys[pg.K_s]:
 				self.rotate(y = self.SENSITIVITY * 50)
 
 		# keep light with camera
@@ -130,7 +130,7 @@ class Camera():
 		if abs(self.rel_x) > 0 or abs(self.rel_y) > 0:
 			self.theta += self.rel_x * self.SENSITIVITY
 			self.phi -= self.rel_y * self.SENSITIVITY
-			self.phi = max(-89, min(89, self.phi))
+			self.phi = max(45, min(75, self.phi))
 
 			if self.target is not None:
 				theta = math.radians(self.theta)
