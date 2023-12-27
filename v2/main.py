@@ -1,4 +1,8 @@
 from core.renderer import Renderer
+from core.scene import Scene
 
 renderer = Renderer()
-renderer.run()
+
+scene = Scene(renderer)
+
+renderer.run(scene)

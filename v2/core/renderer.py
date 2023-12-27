@@ -46,12 +46,12 @@ class Renderer():
 		for event in pygame.event.get():
 			# global program close event
 			if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-				# destroy scene
-				# TODO
+				# end run loop and destroy scene
+				self.is_running = False
+				self.scene.destroy()
+				# quit program
 				pygame.quit()
 				sys.exit()
-			# component events
-			# TODO
 			# switch between render modes
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
 				self.render_mode = moderngl.TRIANGLES
@@ -59,6 +59,8 @@ class Renderer():
 				self.render_mode = moderngl.LINES
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
 				self.render_mode = moderngl.POINTS
+			# component events
+			self.scene.check_event(event)
 
 	def render(self):
 		# show fps in window caption
@@ -67,11 +69,16 @@ class Renderer():
 		self.ctx.screen.use()
 		self.ctx.clear(color = (1, 1, 1, 0))
 		# render scene
-		# TODO
+		self.scene.render()
 		# swap buffers
 		pygame.display.flip()
 
-	def run(self):
+	def run(self, scene):
+		# setup scene
+		self.scene = scene
+		# setup camera
+		# TODO
+
 		self.is_running = True
 		# start the render loop
 		while self.is_running == True:
