@@ -14,6 +14,8 @@ class Renderer():
 		# setup pygame / moderngl
 		self.setup_pygame()
 		self.setup_moderngl()
+		# setup shaders
+		self.setup_shaders()
 
 	def setup_config(self, config):
 		# general config
@@ -27,7 +29,7 @@ class Renderer():
 		pygame.init()
 		# gloval game clock
 		self.clock = pygame.time.Clock()
-		self.delta_time = 0
+		self.delta_time = 1
 		self.is_running = False
 
 	def setup_moderngl(self):
@@ -42,13 +44,27 @@ class Renderer():
 		self.ctx.blend_func = moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA
 		self.ctx.blend_equation = moderngl.FUNC_ADD
 
-	def check_events(self):
+	def setup_shaders(self):
+		# default shader
+		with open('shaders/default.vert', 'r') as vertex_shader_file:
+			default_vertex_shader = vertex_shader_file.read()
+		with open('shaders/default.frag', 'r') as fragment_shader_file:
+			default_fragment_shader = fragment_shader_file.read()
+		# shaders dict
+		self.shaders = {
+			'default': self.ctx.program(
+				vertex_shader = default_vertex_shader,
+				fragment_shader = default_fragment_shader,
+			),
+		}
+
+	def check_events(self, scene, camera):
 		for event in pygame.event.get():
 			# global program close event
 			if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
 				# end run loop and destroy scene
 				self.is_running = False
-				self.scene.destroy()
+				scene.destroy()
 				# quit program
 				pygame.quit()
 				sys.exit()
@@ -60,31 +76,27 @@ class Renderer():
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
 				self.render_mode = moderngl.POINTS
 			# component events
-			self.scene.check_event(event)
+			# TODO scene.check_event(event)
+			# TODO camera.check_event(event)
 
-	def render(self):
+	def render(self, scene, camera):
 		# show fps in window caption
 		pygame.display.set_caption(f'{round(self.clock.get_fps(), 2)}')
 		# clear original frame buffer
 		self.ctx.screen.use()
 		self.ctx.clear(color = (1, 1, 1, 0))
 		# render scene
-		self.scene.render()
+		scene.render(camera)
 		# swap buffers
 		pygame.display.flip()
 
-	def run(self, scene):
-		# setup scene
-		self.scene = scene
-		# setup camera
-		# TODO
-
+	def run(self, scene, camera):
 		self.is_running = True
 		# start the render loop
 		while self.is_running == True:
 			# check for event listeners
-			self.check_events()
+			self.check_events(scene, camera)
 			# render scene
-			self.render()
+			self.render(scene, camera)
 			# get next screen
 			self.delta_time = self.clock.tick(60)
