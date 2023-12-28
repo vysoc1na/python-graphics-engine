@@ -13,7 +13,7 @@ uniform vec3 diffuse_color = vec3(1, 1, 1);
 void main() {
     vec3 normal = normalize(frag_normal);
 
-    vec3 light_direction = normalize(light_position - frag_position);
+    vec3 light_direction = normalize(frag_position - light_position);
     float diffuse_intensity = max(dot(normal, light_direction), 0.0);
 
     vec3 ambient_light = ambient_color * frag_color.rgb;
