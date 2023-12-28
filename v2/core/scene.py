@@ -12,7 +12,6 @@ class Scene():
 			item.render(
 				projection = camera.m_projection,
 				view = camera.m_view,
-				model = camera.m_model,
 				ctx = self.ctx,
 				render_mode = self.renderer.render_mode,
 			)

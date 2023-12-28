@@ -38,15 +38,21 @@ class Mesh():
 
 		return model
 
-	def render(self, projection, view, model, ctx, render_mode):
+	def render(self, projection, view, ctx, render_mode):
 		# update callback
 		if callable(self.update_method):
 			self.update_method(self.geometry, self.material)
 
+		# update vertices
+		self.update(ctx)
 		# mvp
 		self.shader_program['projection'].write(projection)
 		self.shader_program['view'].write(view)
 		self.shader_program['model'].write(self.get_model_matrix())
+		# render
+		self.vao.render(render_mode)
+
+	def update(self, ctx):
 		# vbo
 		self.vbo = ctx.buffer(self.vertex_data)
 		# vao
@@ -55,8 +61,52 @@ class Mesh():
 				(self.vbo, '3f 3f 3f', 'in_position', 'in_normal', 'in_color'),
 			]
 		)
-		# Render the mesh
-		self.vao.render(render_mode)
 
 	def destroy(self):
 		self.vao.release()
+
+class MeshInstanced(Mesh):
+	def __init__(
+		self,
+		geometry,
+		material,
+		shader_program,
+		instance_data,
+		update_method = None,
+	):
+		# setup mesh
+		super().__init__(geometry, material, shader_program, update_method)
+		# setup sintanced data
+		self.instance_data = instance_data
+
+	def get_model_matrix(self, instance_index = 0):
+		# instnce data
+		position = self.instance_data[instance_index].get('position') or self.geometry.position
+		rotation = self.instance_data[instance_index].get('rotation') or self.geometry.rotation
+		scale = self.instance_data[instance_index].get('scale') or self.geometry.scale
+		# matrices
+		translation_matrix = glm.translate(glm.mat4(1.0), position)
+		rotation_quaternion = glm.quat(glm.radians(rotation))
+		rotation_matrix = glm.mat4_cast(rotation_quaternion)
+		scale_matrix = glm.scale(glm.mat4(1.0), scale)
+		# model matrix
+		model = translation_matrix * rotation_matrix * scale_matrix
+		return model
+
+	def render(self, projection, view, ctx, render_mode):
+		# update callback
+		if callable(self.update_method):
+			self.update_method(self.geometry, self.material, self.instance_data)
+
+		# update vertices
+		self.update(ctx)
+		# mvp
+		self.shader_program['projection'].write(projection)
+		self.shader_program['view'].write(view)
+		# render each isntance
+		for instance_index in range(len(self.instance_data)):
+			model_matrix = self.get_model_matrix(instance_index)
+			self.shader_program['model'].write(model_matrix)
+			# render
+			self.vao.render(render_mode, instances = 1)
+
