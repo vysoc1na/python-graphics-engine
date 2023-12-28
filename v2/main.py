@@ -1,7 +1,7 @@
 from core.renderer import Renderer
 from core.scene import Scene
 from core.camera import Camera
-from core.geometry import BoxGeometry, PlaneGeometry
+from core.geometry import BoxGeometry, PlaneGeometry, TerrainPlaneGeometry
 from core.material import SolidMaterial
 from core.mesh import Mesh, MeshInstanced
 
@@ -34,11 +34,42 @@ scene.children.append(box_mesh)
 # PlaneGeometry Example
 """
 plane_mesh = Mesh(
-	geometry = PlaneGeometry(),
+	geometry = PlaneGeometry(rotation = (45, 0, 0)),
 	material = SolidMaterial(color = (1, 0, 0)),
 	shader_program = renderer.shaders['default'],
 )
 scene.children.append(plane_mesh)
+"""
+
+# TerrainPlaneGeometry Example
+"""
+def terrain_update_method(geometry, material):
+	#geometry.rotation.x += 10 / renderer.delta_time
+	geometry.rotation.y += 10 / renderer.delta_time
+
+terrain_mesh = Mesh(
+	geometry = TerrainPlaneGeometry(
+		position = (0, -2, -5),
+		height_map = [
+			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
+			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
+			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
+			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
+			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
+			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
+			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
+			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
+			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
+			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
+			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
+			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
+		],
+	),
+	material = SolidMaterial(color = (0.2, 0.3, 0.4)),
+	shader_program = renderer.shaders['default'],
+	update_method = terrain_update_method,
+)
+scene.children.append(terrain_mesh)
 """
 
 renderer.run(scene, camera)
