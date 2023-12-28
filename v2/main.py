@@ -10,6 +10,21 @@ renderer = Renderer()
 scene = Scene(renderer)
 camera = Camera(renderer)
 
+# Box Geometry
+"""
+def box_update_method(geometry, material):
+	geometry.rotation.x += 10 / renderer.delta_time
+	geometry.rotation.y += 10 / renderer.delta_time
+
+box_mesh = Mesh(
+	geometry = BoxGeometry(),
+	material = SolidMaterial(color = (0.6, 0.3, 0.5)),
+	shader_program = renderer.shaders['default'],
+	update_method = box_update_method,
+)
+scene.children.append(box_mesh)
+"""
+
 # BoxGeoemtry Instanced Example
 """
 def box_update_method(geometry, material, instance_data):
