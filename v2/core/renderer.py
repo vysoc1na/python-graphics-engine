@@ -77,7 +77,6 @@ class Renderer():
 				self.render_mode = moderngl.POINTS
 			# component events
 			# TODO scene.check_event(event)
-			# TODO camera.check_event(event)
 
 	def render(self, scene, camera):
 		# show fps in window caption
@@ -96,6 +95,8 @@ class Renderer():
 		while self.is_running == True:
 			# check for event listeners
 			self.check_events(scene, camera)
+			# camera movement
+			camera.controls(self.delta_time)
 			# render scene
 			self.render(scene, camera)
 			# get next screen
