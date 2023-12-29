@@ -2,15 +2,17 @@ import glm
 import math
 
 from utils.interpolate import interpolate
+from utils.lerp import lerp
 
 from core.geometry import BoxGeometry
 from core.material import SolidMaterial
 from core.mesh import Mesh
 
 class Entity():
-	def __init__(self, renderer, terrain_component):
+	def __init__(self, renderer, terrain_component, camera_component):
 		self.renderer = renderer
 		self.terrain_component = terrain_component
+		self.camera_component = camera_component
 		# setup mesh
 		self.on_init()
 
@@ -25,6 +27,7 @@ class Entity():
 			update_method = [
 				self.move_around_circle,
 				self.snap_to_terrain,
+				self.snap_camera,
 			],
 		)
 
@@ -61,3 +64,14 @@ class Entity():
 		new_position.y = interpolated_height + (geometry.size.y / 2)
 		# assign new position
 		geometry.position = new_position
+
+	def snap_camera(self, geometry, material):
+		radius = max(1, self.camera_component.position.y)
+		angle = math.radians(self.camera_component.yaw - 180)
+		smoothness = 0.05
+
+		target_x = geometry.position.x + radius * math.cos(angle)
+		target_z = geometry.position.z + radius * math.sin(angle)
+
+		self.camera_component.position.x = lerp(self.camera_component.position.x, target_x, smoothness)
+		self.camera_component.position.z = lerp(self.camera_component.position.z, target_z, smoothness)

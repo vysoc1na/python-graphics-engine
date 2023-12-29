@@ -62,7 +62,7 @@ scene.children.append(plane_mesh)
 terrain = Terrain(renderer)
 scene.children.append(terrain.mesh)
 # Player Entity
-player = Entity(renderer, terrain_component = terrain)
+player = Entity(renderer, terrain_component = terrain, camera_component = camera)
 scene.children.append(player.mesh)
 
 renderer.run(scene, camera)

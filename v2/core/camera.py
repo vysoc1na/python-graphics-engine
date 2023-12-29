@@ -2,7 +2,7 @@ import glm
 import pygame
 
 class Camera():
-	def __init__(self, renderer, position = (0, 0, 5)):
+	def __init__(self, renderer, position = (0, 5, 0)):
 		# setup context
 		self.renderer = renderer
 		self.ctx = renderer.ctx
@@ -17,7 +17,7 @@ class Camera():
 		self.up = glm.vec3(0, 1, 0)
 		self.right = glm.vec3(1, 0, 0)
 		self.yaw = -90
-		self.pitch = 0
+		self.pitch = -45
 
 	def setup_mvp(self):
 		# constants
@@ -44,13 +44,17 @@ class Camera():
 		velocity = self.speed * dt
 		# camera movement
 		if keys[pygame.K_w]:
-			self.position += velocity * self.front
+			# self.position += velocity * self.front
+			self.position -= velocity * self.up
 		if keys[pygame.K_s]:
-			self.position -= velocity * self.front
+			# self.position -= velocity * self.front
+			self.position += velocity * self.up
 		if keys[pygame.K_a]:
-			self.position -= glm.normalize(glm.cross(self.front, self.up)) * velocity
+			# self.position -= glm.normalize(glm.cross(self.front, self.up)) * velocity
+			self.yaw += velocity * 10
 		if keys[pygame.K_d]:
-			self.position += glm.normalize(glm.cross(self.front, self.up)) * velocity
+			# self.position += glm.normalize(glm.cross(self.front, self.up)) * velocity
+			self.yaw -= velocity * 10
 		if keys[pygame.K_SPACE]:
 			self.position += velocity * self.up
 		if keys[pygame.K_LSHIFT]:
@@ -68,11 +72,11 @@ class Camera():
 			self.yaw += rel_x * velocity
 			self.pitch -= rel_y * velocity
 			self.pitch = max(-89, min(89, self.pitch))
-			# update vectors
-			yaw, pitch = glm.radians(self.yaw), glm.radians(self.pitch)
-			self.front.x = glm.cos(yaw) * glm.cos(pitch)
-			self.front.y = glm.sin(pitch)
-			self.front.z = glm.sin(yaw) * glm.cos(pitch)
-			self.front = glm.normalize(self.front)
-			self.right = glm.normalize(glm.cross(self.front, glm.vec3(0, 1, 0)))
-			self.up = glm.normalize(glm.cross(self.right, self.front))
+		# update vectors
+		yaw, pitch = glm.radians(self.yaw), glm.radians(self.pitch)
+		self.front.x = glm.cos(yaw) * glm.cos(pitch)
+		self.front.y = glm.sin(pitch)
+		self.front.z = glm.sin(yaw) * glm.cos(pitch)
+		self.front = glm.normalize(self.front)
+		self.right = glm.normalize(glm.cross(self.front, glm.vec3(0, 1, 0)))
+		self.up = glm.normalize(glm.cross(self.right, self.front))
