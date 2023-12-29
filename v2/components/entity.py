@@ -34,8 +34,8 @@ class Entity():
 	def move_around_circle(self, geometry, material):
 		new_position = glm.vec3(geometry.position)
 		# move on circle
-		new_position.x = math.sin(self.renderer.elapsed_time / 3000) * 5 + 8
-		new_position.z = math.cos(self.renderer.elapsed_time / 3000) * 5 + 8
+		new_position.x = math.sin(self.renderer.elapsed_time / 10000) * 4 + 8
+		new_position.z = math.cos(self.renderer.elapsed_time / 10000) * 4 + 8
 		# set new position to geometry
 		geometry.position = new_position
 

@@ -15,8 +15,6 @@ class Mesh():
 		self.update_method = update_method
 		# setup shader, vbo, vao
 		self.shader_program = shader_program
-		# setup combined vertex_data
-		self.setup_vertex_data()
 
 	def setup_vertex_data(self):
 		# geometry
@@ -39,6 +37,8 @@ class Mesh():
 		return model
 
 	def render(self, projection, view, ctx, render_mode):
+		# get combined vertex data
+		self.setup_vertex_data()
 		# update callback
 		if isinstance(self.update_method, list):
 			for update_method in self.update_method:
@@ -98,6 +98,8 @@ class MeshInstanced(Mesh):
 		return model
 
 	def render(self, projection, view, ctx, render_mode):
+		# get combined vertex data
+		self.setup_vertex_data()
 		# update callback
 		if isinstance(self.update_method, list):
 			for update_method in self.update_method:
