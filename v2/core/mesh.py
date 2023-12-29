@@ -40,7 +40,11 @@ class Mesh():
 
 	def render(self, projection, view, ctx, render_mode):
 		# update callback
-		if callable(self.update_method):
+		if isinstance(self.update_method, list):
+			for update_method in self.update_method:
+				if callable(update_method):
+					update_method(self.geometry, self.material)
+		elif callable(self.update_method):
 			self.update_method(self.geometry, self.material)
 
 		# update vertices
@@ -95,7 +99,11 @@ class MeshInstanced(Mesh):
 
 	def render(self, projection, view, ctx, render_mode):
 		# update callback
-		if callable(self.update_method):
+		if isinstance(self.update_method, list):
+			for update_method in self.update_method:
+				if callable(update_method):
+					update_method(self.geometry, self.material, self.instance_data)
+		elif callable(self.update_method):
 			self.update_method(self.geometry, self.material, self.instance_data)
 
 		# update vertices
