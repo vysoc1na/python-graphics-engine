@@ -36,7 +36,6 @@ class Camera():
 		# andle rotation
 		self.rotate(delta_time)
 		# update view matrix
-		print(self.front)
 		self.m_view = glm.lookAt(self.position, self.position + self.front, self.up)
 
 	def move(self, dt):

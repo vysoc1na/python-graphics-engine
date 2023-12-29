@@ -139,8 +139,6 @@ class PlaneGeometry(Geometry):
 		self.normals = [[self.calculate_normal(*self.vertices[:3])] * 6]
 		self.normals = numpy.concatenate(self.normals)
 
-		print(self.vertices, self.normals)
-
 class TerrainPlaneGeometry(PlaneGeometry):
 	def __init__(
 		self,
@@ -163,7 +161,7 @@ class TerrainPlaneGeometry(PlaneGeometry):
 			for j in range(cols - 1):
 				submatrix = self.height_map[i:i + 2, j:j + 2]
 				result_array.append({
-					'position': glm.vec2(i - (rows-1)/2, j - (cols-1)/2),
+					'position': glm.vec2(i, j),
 					'corners': submatrix.flatten()
 				})
 

@@ -30,6 +30,7 @@ class Renderer():
 		# gloval game clock
 		self.clock = pygame.time.Clock()
 		self.delta_time = 1
+		self.elapsed_time = 1
 		self.is_running = False
 
 	def setup_moderngl(self):
@@ -101,3 +102,4 @@ class Renderer():
 			self.render(scene, camera)
 			# get next screen
 			self.delta_time = self.clock.tick(60)
+			self.elapsed_time = pygame.time.get_ticks()

@@ -1,9 +1,11 @@
 from core.renderer import Renderer
 from core.scene import Scene
 from core.camera import Camera
-from core.geometry import BoxGeometry, PlaneGeometry, TerrainPlaneGeometry
-from core.material import SolidMaterial
-from core.mesh import Mesh, MeshInstanced
+# from core.geometry import BoxGeometry, PlaneGeometry, TerrainPlaneGeometry
+# from core.material import SolidMaterial
+# from core.mesh import Mesh, MeshInstanced
+from components.terrain import Terrain
+from components.entity import Entity
 
 renderer = Renderer()
 
@@ -11,6 +13,7 @@ scene = Scene(renderer)
 camera = Camera(renderer)
 
 # Box Geometry
+"""
 def box_update_method(geometry, material):
 	geometry.rotation.x += 10 / renderer.delta_time
 	geometry.rotation.y += 10 / renderer.delta_time
@@ -22,6 +25,7 @@ box_mesh = Mesh(
 	update_method = box_update_method,
 )
 scene.children.append(box_mesh)
+"""
 
 # BoxGeoemtry Instanced Example
 """
@@ -54,35 +58,11 @@ plane_mesh = Mesh(
 scene.children.append(plane_mesh)
 """
 
-# TerrainPlaneGeometry Example
-"""
-def terrain_update_method(geometry, material):
-	#geometry.rotation.x += 10 / renderer.delta_time
-	geometry.rotation.y += 10 / renderer.delta_time
-
-terrain_mesh = Mesh(
-	geometry = TerrainPlaneGeometry(
-		position = (0, -2, -5),
-		height_map = [
-			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
-			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
-			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
-			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
-			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
-			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
-			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
-			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
-			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
-			[0, 0.5, 1.0, 1.0, 0.5, 0, 0, 0.5, 1.0, 1.0, 0.5, 0],
-			[0, 0.5, 0.5, 0.5, 0.5, 0, 0, 0.5, 0.5, 0.5, 0.5, 0],
-			[0,   0,   0,   0,   0, 0, 0,   0,   0,   0,   0, 0],
-		],
-	),
-	material = SolidMaterial(color = (0.2, 0.3, 0.4)),
-	shader_program = renderer.shaders['default'],
-	update_method = terrain_update_method,
-)
-scene.children.append(terrain_mesh)
-"""
+# Terrain
+terrain = Terrain(renderer)
+scene.children.append(terrain.mesh)
+# Player Entity
+player = Entity(renderer, terrain_component = terrain)
+scene.children.append(player.mesh)
 
 renderer.run(scene, camera)
