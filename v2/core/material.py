@@ -9,4 +9,3 @@ class SolidMaterial():
 		# setup config
 		self.color = glm.vec3(color)
 		self.transparency = glm.float_(transparency)
-

@@ -59,9 +59,6 @@ class Camera():
 			self.position += velocity * self.up
 		if keys[pygame.K_LSHIFT]:
 			self.position -= velocity * self.up
-		# update view_matrix
-		if keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d] or keys[pygame.K_SPACE] or keys[pygame.K_LSHIFT]:
-			self.m_view = glm.lookAt(self.position, self.position + self.front, self.up)
 
 	def rotate(self, dt):
 		rel_x, rel_y = pygame.mouse.get_rel()
