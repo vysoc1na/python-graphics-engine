@@ -13,9 +13,7 @@ class Enemy(Entity):
 		terrain_component,
 		obstacles_component,
 	):
-		super().__init__(renderer, terrain_component)
-		# setup obstacles for pathfinding
-		self.obstacles_component = obstacles_component
+		super().__init__(renderer, terrain_component, obstacles_component)
 		# setup states
 		self.IDLE = 0
 		self.WAITING = 1

@@ -13,11 +13,18 @@ class Entity():
 		self,
 		renderer,
 		terrain_component,
+		obstacles_component,
 		camera_component = None,
 	):
 		self.renderer = renderer
 		self.terrain_component = terrain_component
 		self.camera_component = camera_component
+		# setup obstacles for pathfinding
+		self.obstacles_component = obstacles_component
+		self.obstacles = []
+		for item in self.obstacles_component.obstacles_data:
+			position = item['position']
+			self.obstacles.append((position[0] - 0.5, position[2] - 0.5))
 		# update methods
 		self.update_method = []
 		# setup mesh
@@ -26,11 +33,6 @@ class Entity():
 	def on_init(self):
 		self.geometry = BoxGeometry(size = (0.1, 0.5, 0.1), position = (0.5, 0, 0.5))
 		self.material = SolidMaterial(color = (0.8, 0.6, 0.2))
-
-		self.update_method.append(self.snap_to_terrain)
-		# only follow entities with attached camera component
-		if self.camera_component:
-			self.update_method.append(self.snap_camera)
 
 		self.mesh = Mesh(
 			geometry = self.geometry,
@@ -44,6 +46,11 @@ class Entity():
 		self.path = []
 		self.target = None
 		self.update_method.append(self.move_to_target)
+		# snap entity to terrain
+		self.update_method.append(self.snap_to_terrain)
+		# only follow entities with attached camera component
+		if self.camera_component:
+			self.update_method.append(self.snap_camera)
 
 	def move_to_target(self, geometry, material):
 		if len(self.path) > 0:

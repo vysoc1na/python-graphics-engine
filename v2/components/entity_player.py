@@ -16,13 +16,7 @@ class Player(Entity):
 		camera_component,
 		obstacles_component,
 	):
-		super().__init__(renderer, terrain_component, camera_component)
-		# setup obstacles for pathfinding
-		self.obstacles_component = obstacles_component
-		self.obstacles = []
-		for item in self.obstacles_component.obstacles_data:
-			position = item['position']
-			self.obstacles.append((position[0] - 0.5, position[2] - 0.5))
+		super().__init__(renderer, terrain_component, obstacles_component, camera_component)
 		# register events
 		self.update_method.append(self.on_click)
 
@@ -40,22 +34,15 @@ class Player(Entity):
 		height = self.renderer.config['height']
 
 		mouse_x, mouse_y = pygame.mouse.get_pos()
-
 		near_point = glm.vec3(mouse_x, height - mouse_y, 0)
 		far_point = glm.vec3(mouse_x, height - mouse_y, 1)
 
-		near_world = glm.unProject(
-			near_point,
-			self.camera_component.m_view,
-			self.camera_component.m_projection,
-			(0, 0, width, height),
-		)
-		far_world = glm.unProject(
-			far_point,
-			self.camera_component.m_view,
-			self.camera_component.m_projection,
-			(0, 0, width, height),
-		)
+		m_view = self.camera_component.m_view
+		m_projection = self.camera_component.m_projection
+		viewport = (0, 0, width, height)
+
+		near_world = glm.unProject(near_point, m_view, m_projection, viewport)
+		far_world = glm.unProject(far_point, m_view, m_projection, viewport)
 		ray_direction = glm.normalize(far_world - near_world)
 
 		return ray(
