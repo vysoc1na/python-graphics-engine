@@ -20,9 +20,9 @@ class Terrain():
 			geometry = self.geometry,
 			material = self.material,
 			shader_program = self.renderer.shaders['default'],
-			update_method = [
-				self.regenerate_terrain,
-			]
+			# update_method = [
+			# 	self.regenerate_terrain,
+			# ]
 		)
 
 	def regenerate_terrain(self, geometry, material):

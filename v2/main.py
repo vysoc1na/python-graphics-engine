@@ -5,7 +5,7 @@ from core.camera import Camera
 # from core.material import SolidMaterial
 # from core.mesh import Mesh, MeshInstanced
 from components.terrain import Terrain
-from components.entity import Entity
+from components.player import Player
 
 renderer = Renderer()
 
@@ -62,7 +62,7 @@ scene.children.append(plane_mesh)
 terrain = Terrain(renderer)
 scene.children.append(terrain.mesh)
 # Player Entity
-player = Entity(renderer, terrain_component = terrain, camera_component = camera)
+player = Player(renderer, terrain_component = terrain, camera_component = camera)
 scene.children.append(player.mesh)
 
 renderer.run(scene, camera)

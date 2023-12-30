@@ -13,6 +13,8 @@ class Entity():
 		self.renderer = renderer
 		self.terrain_component = terrain_component
 		self.camera_component = camera_component
+		# update methods
+		self.update_method = []
 		# setup mesh
 		self.on_init()
 
@@ -20,15 +22,15 @@ class Entity():
 		self.geometry = BoxGeometry(size = (0.1, 0.5, 0.1))
 		self.material = SolidMaterial(color = (0.8, 0.6, 0.2))
 
+		# self.update_method.append(self.move_around_circle)
+		self.update_method.append(self.snap_to_terrain)
+		self.update_method.append(self.snap_camera)
+
 		self.mesh = Mesh(
 			geometry = self.geometry,
 			material = self.material,
 			shader_program = self.renderer.shaders['default'],
-			update_method = [
-				self.move_around_circle,
-				self.snap_to_terrain,
-				self.snap_camera,
-			],
+			update_method = self.update_method,
 		)
 
 	def move_around_circle(self, geometry, material):
