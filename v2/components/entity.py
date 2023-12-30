@@ -19,7 +19,7 @@ class Entity():
 		self.on_init()
 
 	def on_init(self):
-		self.geometry = BoxGeometry(size = (0.1, 0.5, 0.1))
+		self.geometry = BoxGeometry(size = (0.1, 0.5, 0.1), position = (0.5, 0, 0.5))
 		self.material = SolidMaterial(color = (0.8, 0.6, 0.2))
 
 		# self.update_method.append(self.move_around_circle)

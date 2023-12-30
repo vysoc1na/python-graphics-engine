@@ -5,6 +5,7 @@ from core.camera import Camera
 # from core.material import SolidMaterial
 # from core.mesh import Mesh, MeshInstanced
 from components.terrain import Terrain
+from components.obstacles import Obstacles
 from components.player import Player
 
 renderer = Renderer()
@@ -60,9 +61,28 @@ scene.children.append(plane_mesh)
 
 # Terrain
 terrain = Terrain(renderer)
-scene.children.append(terrain.mesh)
+# Terrain Obstacles
+obstacles = Obstacles(
+	renderer,
+	terrain_component = terrain,
+	obstacles_data = [
+		{ 'position': [3, 0, 3] },
+		{ 'position': [4, 0, 3] },
+		{ 'position': [5, 0, 3] },
+		{ 'position': [5, 0, 4] },
+		{ 'position': [5, 0, 5] },
+	],
+)
+
 # Player Entity
-player = Player(renderer, terrain_component = terrain, camera_component = camera)
+player = Player(
+	renderer,
+	terrain_component = terrain,
+	obstacles_component = obstacles,
+	camera_component = camera,
+)
+scene.children.append(terrain.mesh)
 scene.children.append(player.mesh)
+scene.children.append(obstacles.mesh)
 
 renderer.run(scene, camera)
