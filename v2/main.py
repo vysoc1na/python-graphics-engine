@@ -6,7 +6,8 @@ from core.camera import Camera
 # from core.mesh import Mesh, MeshInstanced
 from components.terrain import Terrain
 from components.obstacles import Obstacles
-from components.player import Player
+from components.entity_player import Player
+from components.entity_enemy import Enemy
 
 renderer = Renderer()
 
@@ -81,8 +82,16 @@ player = Player(
 	obstacles_component = obstacles,
 	camera_component = camera,
 )
+# Enemy Entity
+enemy = Enemy(
+	renderer,
+	terrain_component = terrain,
+	obstacles_component = obstacles,
+)
+# compose scene
 scene.children.append(terrain.mesh)
 scene.children.append(player.mesh)
+scene.children.append(enemy.mesh)
 scene.children.append(obstacles.mesh)
 
 renderer.run(scene, camera)

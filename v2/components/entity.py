@@ -9,7 +9,12 @@ from core.material import SolidMaterial
 from core.mesh import Mesh
 
 class Entity():
-	def __init__(self, renderer, terrain_component, camera_component):
+	def __init__(
+		self,
+		renderer,
+		terrain_component,
+		camera_component = None,
+	):
 		self.renderer = renderer
 		self.terrain_component = terrain_component
 		self.camera_component = camera_component
@@ -22,9 +27,10 @@ class Entity():
 		self.geometry = BoxGeometry(size = (0.1, 0.5, 0.1), position = (0.5, 0, 0.5))
 		self.material = SolidMaterial(color = (0.8, 0.6, 0.2))
 
-		# self.update_method.append(self.move_around_circle)
 		self.update_method.append(self.snap_to_terrain)
-		self.update_method.append(self.snap_camera)
+		# only follow entities with attached camera component
+		if self.camera_component:
+			self.update_method.append(self.snap_camera)
 
 		self.mesh = Mesh(
 			geometry = self.geometry,
@@ -33,13 +39,21 @@ class Entity():
 			update_method = self.update_method,
 		)
 
-	def move_around_circle(self, geometry, material):
-		new_position = glm.vec3(geometry.position)
-		# move on circle
-		new_position.x = math.sin(self.renderer.elapsed_time / 10000) * 4 + 8
-		new_position.z = math.cos(self.renderer.elapsed_time / 10000) * 4 + 8
-		# set new position to geometry
-		geometry.position = new_position
+		# move along path of x-z coordinates
+		self.time_per_action = 500
+		self.path = []
+		self.target = None
+		self.update_method.append(self.move_to_target)
+
+	def move_to_target(self, geometry, material):
+		if len(self.path) > 0:
+			if self.renderer.elapsed_time % self.time_per_action > self.time_per_action - self.renderer.delta_time:
+				target = self.path.pop(0)
+				self.target = glm.vec3(target[0], 0, target[1])
+
+		if self.target:
+			geometry.position.x = lerp(geometry.position.x, self.target.x + 0.5, 0.05)
+			geometry.position.z = lerp(geometry.position.z, self.target.z + 0.5, 0.05)
 
 	def snap_to_terrain(self, geometry, material):
 		new_position = glm.vec3(geometry.position)
