@@ -7,9 +7,11 @@ layout (location = 2) in vec3 in_color;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform float transparency;
 
 out vec3 frag_normal;
 out vec4 frag_color;
+out float frag_transparency;
 out vec3 frag_position;
 
 void main() {
@@ -17,5 +19,6 @@ void main() {
 
     frag_normal = mat3(transpose(inverse(model))) * in_normal;
     frag_color = vec4(in_color, 1);
+    frag_transparency = transparency;
     frag_position = vec3(model * vec4(in_position, 1.0));
 }

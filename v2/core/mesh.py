@@ -65,6 +65,8 @@ class Mesh():
 				(self.vbo, '3f 3f 3f', 'in_position', 'in_normal', 'in_color'),
 			]
 		)
+		# material data
+		self.shader_program['transparency'].write(self.material.transparency)
 
 	def destroy(self):
 		self.vao.release()
@@ -89,10 +91,10 @@ class MeshInstanced(Mesh):
 		rotation = self.instance_data[instance_index].get('rotation') or self.geometry.rotation
 		scale = self.instance_data[instance_index].get('scale') or self.geometry.scale
 		# matrices
-		translation_matrix = glm.translate(glm.mat4(1.0), position)
+		translation_matrix = glm.translate(glm.mat4(1.0), glm.vec3(*position))
 		rotation_quaternion = glm.quat(glm.radians(rotation))
 		rotation_matrix = glm.mat4_cast(rotation_quaternion)
-		scale_matrix = glm.scale(glm.mat4(1.0), scale)
+		scale_matrix = glm.scale(glm.mat4(1.0), glm.vec3(*scale))
 		# model matrix
 		model = translation_matrix * rotation_matrix * scale_matrix
 		return model

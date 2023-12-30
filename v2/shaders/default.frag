@@ -2,6 +2,7 @@
 
 in vec3 frag_normal;
 in vec4 frag_color;
+in float frag_transparency;
 in vec3 frag_position;
 
 out vec4 color;
@@ -20,5 +21,5 @@ void main() {
     vec3 diffuse_light = diffuse_color * frag_color.rgb * diffuse_intensity;
     vec3 final_color = ambient_light + diffuse_light;
 
-    color = vec4(final_color, frag_color.a);
+    color = vec4(final_color, frag_transparency);
 }
