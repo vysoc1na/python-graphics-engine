@@ -10,6 +10,7 @@ class Enemy(Entity):
 	def __init__(
 		self,
 		renderer,
+		position,
 		terrain_component,
 		obstacles_component,
 	):
@@ -22,19 +23,22 @@ class Enemy(Entity):
 		# entity config
 		self.radius = 4
 		self.wait_time = 1000
-		self.spawn_point = glm.vec3(8, 0, 8)
-		self.obstacles = []
-		for item in self.obstacles_component.obstacles_data:
-			position = item['position']
-			self.obstacles.append((position[0] - 0.5, position[2] - 0.5))
+		self.spawn_point = glm.vec3(position) + glm.vec3(0.5, 0, 0.5)
 		# modify mesh
 		self.reshape_entity()
 		# register events
 		self.update_method.append(self.simple_logic)
+		self.update_method.append(self.change_color_on_action)
 
 	def reshape_entity(self):
 		self.geometry.position = self.spawn_point
 		self.material.color = glm.vec3(1, 0, 0)
+
+	def change_color_on_action(self, geometry, material):
+		if len(self.path):
+			material.color = glm.vec3(0, 0, 1)
+		else:
+			material.color = glm.vec3(1, 0, 0)
 
 	def simple_logic(self, geometry, material):
 		self.wait_time -= self.renderer.delta_time
@@ -51,13 +55,13 @@ class Enemy(Entity):
 			theta = random.uniform(0, 2 * math.pi)
 			radius = random.uniform(0, self.radius)
 			# radom point within radius
-			x = self.spawn_point.x + radius * math.cos(theta)
-			z = self.spawn_point.z + radius * math.sin(theta)
+			x = self.spawn_point.x - 0.5 + radius * math.cos(theta)
+			z = self.spawn_point.z - 0.5 + radius * math.sin(theta)
 
 			start = (math.floor(geometry.position.x), math.floor(geometry.position.z))
 			end = (math.floor(x), math.floor(z))
 
-			self.path = astar([], start, end)
+			self.path = astar(self.obstacles, start, end)
 			self.state = self.WALKING
 
 		# go back to idle when finished walking

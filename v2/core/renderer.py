@@ -4,8 +4,8 @@ import sys
 
 class Renderer():
 	DEFAULT_CONFIG = {
-		'width': 800,
-		'height': 600,
+		'width': 2560 / 3,
+		'height': 1600 / 3,
 	}
 
 	def __init__(self, config = None):
@@ -76,8 +76,10 @@ class Renderer():
 				self.render_mode = moderngl.LINES
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
 				self.render_mode = moderngl.POINTS
-			# component events
-			# TODO scene.check_event(event)
+			# camera zoom handler
+			if event.type == pygame.MOUSEWHEEL:
+				# camera controls
+				camera.set_zoom(event)
 
 	def render(self, scene, camera):
 		# show fps in window caption
@@ -96,10 +98,10 @@ class Renderer():
 		while self.is_running == True:
 			# check for event listeners
 			self.check_events(scene, camera)
-			# camera movement
-			camera.controls(self.delta_time)
 			# render scene
 			self.render(scene, camera)
+			# camera movement
+			camera.controls(self.delta_time)
 			# get next screen
 			self.delta_time = self.clock.tick(60)
 			self.elapsed_time = pygame.time.get_ticks()

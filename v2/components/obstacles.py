@@ -1,6 +1,6 @@
 import glm
 
-from core.geometry import PlaneGeometry
+from core.geometry import BoxGeometry
 from core.material import SolidMaterial
 from core.mesh import MeshInstanced
 
@@ -21,17 +21,13 @@ class Obstacles():
 			x = position[0]
 			z = position[2]
 
-			item['position'] = (
-				x - 0.5,
-				terrain_component.geometry.height_map[x][z] + 0.1,
-				z - 0.5,
-			)
+			item['position'] = (x - 0.5, 0.5, z - 0.5)
 
 		# setup mesh
 		self.on_init()
 
 	def on_init(self):
-		self.geometry = PlaneGeometry()
+		self.geometry = BoxGeometry(size = (1, 1.5, 1))
 		self.material = SolidMaterial(
 			color = (1, 0, 0),
 			transparency = 0.2,

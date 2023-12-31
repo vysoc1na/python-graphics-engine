@@ -130,14 +130,18 @@ class PlaneGeometry(Geometry):
 
 		return vertices
 
+	def get_plane_normals(self):
+		normals = [[self.calculate_normal(*self.vertices[:3])] * 6]
+		normals = numpy.concatenate(normals)
+		return normals
+
 	def setup_vertex_data(self):
 		half_width = 0.5 * self.size.x
 		half_height = 0.5 * self.size.y
 
 		self.vertices = self.get_plane_vertices()
 		# calculate normals for each triangle
-		self.normals = [[self.calculate_normal(*self.vertices[:3])] * 6]
-		self.normals = numpy.concatenate(self.normals)
+		self.normals = self.get_plane_normals()
 
 class TerrainPlaneGeometry(PlaneGeometry):
 	def __init__(

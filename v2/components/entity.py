@@ -32,8 +32,7 @@ class Entity():
 
 	def on_init(self):
 		self.geometry = BoxGeometry(size = (0.1, 0.5, 0.1), position = (0.5, 0, 0.5))
-		self.material = SolidMaterial(color = (0.8, 0.6, 0.2))
-
+		self.material = SolidMaterial(color = (1, 1, 1))
 		self.mesh = Mesh(
 			geometry = self.geometry,
 			material = self.material,
@@ -91,10 +90,15 @@ class Entity():
 	def snap_camera(self, geometry, material):
 		radius = max(1, self.camera_component.position.y)
 		angle = math.radians(self.camera_component.yaw - 180)
-		smoothness = 0.05
 
 		target_x = geometry.position.x + radius * math.cos(angle)
 		target_z = geometry.position.z + radius * math.sin(angle)
 
-		self.camera_component.position.x = lerp(self.camera_component.position.x, target_x, smoothness)
-		self.camera_component.position.z = lerp(self.camera_component.position.z, target_z, smoothness)
+		self.camera_component.position.x = target_x
+		self.camera_component.position.z = target_z
+
+		self.camera_component.m_view = glm.lookAt(
+			self.camera_component.position,
+			geometry.position + self.camera_component.up,
+			self.camera_component.up,
+		)
