@@ -37,31 +37,14 @@ class Player(Entity):
 
 	def on_click(self, geometry, material):
 		if pygame.mouse.get_pressed()[2] and len(self.path) == 0:
-			intersection_point = self.get_intersection_point()
+			intersection_point = ray(
+				self.renderer,
+				self.camera_component,
+				self.terrain_component.geometry.height_map,
+				pygame.mouse.get_pos(),
+			)
 
 			start = (math.floor(geometry.position.x), math.floor(geometry.position.z))
 			end = (math.floor(intersection_point.x), math.floor(intersection_point.z))
 
 			self.path = astar(self.obstacles, start, end)
-
-	def get_intersection_point(self):
-		width = self.renderer.config['width']
-		height = self.renderer.config['height']
-
-		mouse_x, mouse_y = pygame.mouse.get_pos()
-		near_point = glm.vec3(mouse_x, height - mouse_y, 0)
-		far_point = glm.vec3(mouse_x, height - mouse_y, 1)
-
-		m_view = self.camera_component.m_view
-		m_projection = self.camera_component.m_projection
-		viewport = (0, 0, width, height)
-
-		near_world = glm.unProject(near_point, m_view, m_projection, viewport)
-		far_world = glm.unProject(far_point, m_view, m_projection, viewport)
-		ray_direction = glm.normalize(far_world - near_world)
-
-		return ray(
-			self.camera_component.position,
-			ray_direction,
-			self.terrain_component.geometry.height_map
-		)

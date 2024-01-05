@@ -86,7 +86,7 @@ class Renderer():
 		pygame.display.set_caption(f'{round(self.clock.get_fps(), 2)}')
 		# clear original frame buffer
 		self.ctx.screen.use()
-		self.ctx.clear(color = (1, 1, 1, 0))
+		self.ctx.clear(color = (1, 1, 1, 0), depth = True)
 		# render scene
 		scene.render(camera)
 		# swap buffers
@@ -96,10 +96,10 @@ class Renderer():
 		self.is_running = True
 		# start the render loop
 		while self.is_running == True:
-			# check for event listeners
-			self.check_events(scene, camera)
 			# render scene
 			self.render(scene, camera)
+			# check for event listeners
+			self.check_events(scene, camera)
 			# camera movement
 			camera.controls(self.delta_time)
 			# get next screen

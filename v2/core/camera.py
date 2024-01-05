@@ -8,9 +8,6 @@ class Camera():
 		# setup context
 		self.renderer = renderer
 		self.ctx = renderer.ctx
-		# setup mvp
-		self.position = glm.vec3(position)
-		self.setup_mvp()
 		# constants
 		self.speed = 0.01
 		self.sensitivity = 0.01
@@ -21,6 +18,9 @@ class Camera():
 		self.yaw = -90
 		self.pitch = -45
 		self.zoom = 0
+		# setup mvp
+		self.position = glm.vec3(position)
+		self.setup_mvp()
 
 	def setup_mvp(self):
 		# constants
@@ -30,7 +30,7 @@ class Camera():
 		far_plane = 100
 		# mvp
 		self.m_projection = glm.perspective(fov, aspect_ratio, near_plane, far_plane)
-		self.m_view = glm.lookAt(glm.vec3(0, 0, 5), glm.vec3(0, 0, 0), glm.vec3(0, 1, 0))
+		self.m_view = glm.lookAt(self.position, self.position + self.front, self.up)
 		self.m_model = glm.mat4(1.0)
 
 	def controls(self, delta_time):
@@ -40,8 +40,6 @@ class Camera():
 		self.rotate(delta_time)
 		# decrease zoom
 		self.zoom = lerp(self.zoom, 0, 0.1)
-		# update view matrix
-		# self.m_view = glm.lookAt(self.position, self.position + self.front, self.up)
 
 	def move(self, dt):
 		keys = pygame.key.get_pressed()

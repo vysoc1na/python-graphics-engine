@@ -1,6 +1,8 @@
 import glm
 import numpy
 
+from utils.terrain_data import get_terrain_data
+
 class Geometry():
 	def __init__(
 		self,
@@ -110,7 +112,20 @@ class BoxGeometry(Geometry):
 		], dtype = 'float32')
 
 class PlaneGeometry(Geometry):
-	def get_plane_vertices(self, position = glm.vec2(0, 0), corners = [0, 0, 0, 0]):
+	def __init__(
+		self,
+		size = (1, 1, 1),
+		position = (0, 0, 0),
+		rotation = (0, 0, 0),
+		scale = (1, 1, 1),
+		corners = (0, 0, 0, 0)
+	):
+		# plane config
+		self.corners = corners
+		# init geometry
+		super().__init__(size, position, rotation, scale)
+
+	def get_plane_vertices(self, position = glm.vec2(0, 0), corners = (0, 0, 0, 0)):
 		half_width = 0.5 * self.size.x
 		half_height = 0.5 * self.size.y
 
@@ -139,7 +154,7 @@ class PlaneGeometry(Geometry):
 		half_width = 0.5 * self.size.x
 		half_height = 0.5 * self.size.y
 
-		self.vertices = self.get_plane_vertices()
+		self.vertices = self.get_plane_vertices(corners = self.corners)
 		# calculate normals for each triangle
 		self.normals = self.get_plane_normals()
 
@@ -157,17 +172,7 @@ class TerrainPlaneGeometry(PlaneGeometry):
 		super().__init__(size, position, rotation, scale)
 
 	def setup_vertex_data(self):
-		rows, cols = self.height_map.shape
-		result_array = []
-
-		# iterate over 2x2 submatrices and flatten them
-		for i in range(rows - 1):
-			for j in range(cols - 1):
-				submatrix = self.height_map[i:i + 2, j:j + 2]
-				result_array.append({
-					'position': glm.vec2(i, j),
-					'corners': submatrix.flatten()
-				})
+		result_array = get_terrain_data(self.height_map)
 
 		self.vertices = []
 		self.normals = []
