@@ -39,7 +39,8 @@ class Cursor(Entity):
 		self.material = SolidMaterial(
 			border_only = True,
 			border_size = 0.02,
-			border_color = (0, 0, 1)
+			border_color = (1, 1, 0),
+			transparency = 0.5,
 		)
 		self.mesh = Mesh(
 			geometry = self.geometry,
