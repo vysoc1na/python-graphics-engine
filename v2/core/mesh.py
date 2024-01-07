@@ -29,6 +29,7 @@ class Mesh():
 		self.vertex_data = numpy.hstack([
 			self.geometry.vertices,
 			self.geometry.normals,
+			self.geometry.texture_coords,
 			colors,
 		], dtype = 'float32')
 
@@ -73,7 +74,7 @@ class Mesh():
 			# vao
 			self.vao = ctx.vertex_array(
 				self.shader_program, [
-					(self.vbo, '3f 3f 3f', 'in_position', 'in_normal', 'in_color'),
+					(self.vbo, '3f 3f 2f 3f', 'in_position', 'in_normal', 'texture_coords', 'in_color'),
 				]
 			)
 		# material data

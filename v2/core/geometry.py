@@ -29,86 +29,126 @@ class Geometry():
 	def setup_vertex_data(self):
 		self.vertices = []
 		self.normals = []
+		self.texture_coords = []
 
 class BoxGeometry(Geometry):
 	def setup_vertex_data(self):
 		self.vertices = numpy.array([
+			[-0.5, -0.5, 0.5],
 			[0.5, -0.5, 0.5],
 			[0.5, 0.5, 0.5],
 			[-0.5, -0.5, 0.5],
 			[0.5, 0.5, 0.5],
 			[-0.5, 0.5, 0.5],
-			[-0.5, -0.5, 0.5],
+			[0.5, -0.5, -0.5],
+			[-0.5, -0.5, -0.5],
+			[-0.5, 0.5, -0.5],
+			[0.5, -0.5, -0.5],
+			[-0.5, 0.5, -0.5],
+			[0.5, 0.5, -0.5],
+			[0.5, -0.5, 0.5],
 			[0.5, -0.5, -0.5],
 			[0.5, 0.5, -0.5],
 			[0.5, -0.5, 0.5],
 			[0.5, 0.5, -0.5],
 			[0.5, 0.5, 0.5],
-			[0.5, -0.5, 0.5],
-			[0.5, -0.5, -0.5],
-			[0.5, -0.5, 0.5],
-			[-0.5, -0.5, 0.5],
-			[0.5, -0.5, -0.5],
-			[-0.5, -0.5, 0.5],
 			[-0.5, -0.5, -0.5],
 			[-0.5, -0.5, 0.5],
 			[-0.5, 0.5, 0.5],
-			[-0.5, 0.5, -0.5],
-			[-0.5, -0.5, 0.5],
-			[-0.5, 0.5, -0.5],
 			[-0.5, -0.5, -0.5],
-			[0.5, 0.5, -0.5],
-			[0.5, -0.5, -0.5],
-			[-0.5, -0.5, -0.5],
-			[0.5, 0.5, -0.5],
-			[-0.5, -0.5, -0.5],
-			[-0.5, 0.5, -0.5],
-			[0.5, 0.5, -0.5],
-			[-0.5, 0.5, -0.5],
-			[0.5, 0.5, 0.5],
+			[-0.5, 0.5, 0.5],
 			[-0.5, 0.5, -0.5],
 			[-0.5, 0.5, 0.5],
+			[0.5, 0.5, -0.5],
 			[0.5, 0.5, 0.5],
+			[-0.5, 0.5, 0.5],
+			[-0.5, 0.5, -0.5],
+			[0.5, 0.5, -0.5],
+			[-0.5, -0.5, -0.5],
+			[0.5, -0.5, 0.5],
+			[0.5, -0.5, -0.5],
+			[-0.5, -0.5, -0.5],
+			[-0.5, -0.5, 0.5],
+			[0.5, -0.5, 0.5],
 		], dtype = 'float32')
 		self.vertices *= self.size
 
 		self.normals = numpy.array([
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
 			[0, 0, 1],
 			[0, 0, 1],
 			[0, 0, 1],
 			[0, 0, 1],
 			[0, 0, 1],
 			[0, 0, 1],
+			[0, 0, -1],
+			[0, 0, -1],
+			[0, 0, -1],
+			[0, 0, -1],
+			[0, 0, -1],
+			[0, 0, -1],
+			[1, 0, 0],
+			[1, 0, 0],
+			[1, 0, 0],
+			[1, 0, 0],
+			[1, 0, 0],
+			[1, 0, 0],
+			[0, 1, 0],
+			[0, 1, 0],
+			[0, 1, 0],
+			[0, 1, 0],
+			[0, 1, 0],
+			[0, 1, 0],
+			[-1, 0, 0],
+			[-1, 0, 0],
+			[-1, 0, 0],
+			[-1, 0, 0],
+			[-1, 0, 0],
+			[-1, 0, 0],
 			[0, -1, 0],
 			[0, -1, 0],
 			[0, -1, 0],
 			[0, -1, 0],
 			[0, -1, 0],
 			[0, -1, 0],
+		], dtype = 'float32')
+
+		self.texture_coords = numpy.array([
+			[0, 0],
+			[1, 0],
+			[1, 1],
+			[0, 0],
+			[1, 1],
+			[0, 1],
+			[0, 0],
+			[1, 0],
+			[1, 1],
+			[0, 0],
+			[1, 1],
+			[0, 1],
+			[0, 0],
+			[1, 0],
+			[1, 1],
+			[0, 0],
+			[1, 1],
+			[0, 1],
+			[0, 0],
+			[1, 0],
+			[1, 1],
+			[0, 0],
+			[1, 1],
+			[0, 1],
+			[0, 0],
+			[1, 1],
+			[0, 1],
+			[0, 0],
+			[1, 0],
+			[1, 1],
+			[0, 0],
+			[1, 1],
+			[0, 1],
+			[0, 0],
+			[1, 0],
+			[1, 1],
 		], dtype = 'float32')
 
 class PlaneGeometry(Geometry):
@@ -151,6 +191,15 @@ class PlaneGeometry(Geometry):
 		normals = numpy.concatenate(normals)
 		return normals
 
+	def get_plane_texture_coords(self):
+		max_val = numpy.max(self.vertices, axis=0)
+		min_val = numpy.min(self.vertices, axis=0)
+
+		normalized_vertices = (self.vertices - min_val) / (max_val - min_val)
+		texture_coords = normalized_vertices[:, [0, 2]]
+
+		return texture_coords
+
 	def setup_vertex_data(self):
 		half_width = 0.5 * self.size.x
 		half_height = 0.5 * self.size.y
@@ -158,6 +207,8 @@ class PlaneGeometry(Geometry):
 		self.vertices = self.get_plane_vertices(corners = self.corners)
 		# calculate normals for each triangle
 		self.normals = self.get_plane_normals()
+		# texture coordinates
+		self.texture_coords = self.get_plane_texture_coords()
 
 class TerrainPlaneGeometry(PlaneGeometry):
 	def __init__(
@@ -177,6 +228,7 @@ class TerrainPlaneGeometry(PlaneGeometry):
 
 		self.vertices = []
 		self.normals = []
+		self.texture_coords = []
 		self.colors = []
 
 		# place plane meshes in correct coordinates
@@ -190,6 +242,8 @@ class TerrainPlaneGeometry(PlaneGeometry):
 		self.vertices = numpy.concatenate(self.vertices)
 		# calculate normals for each triangle
 		self.normals = numpy.concatenate(self.normals)
+		# calculate texture coordinates for vertices
+		self.texture_coords = self.get_plane_texture_coords()
 		# get height map color values
 		self.colors = self.get_colors_data()
 
