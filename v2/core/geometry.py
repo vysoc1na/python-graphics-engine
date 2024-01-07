@@ -195,7 +195,10 @@ class PlaneGeometry(Geometry):
 		max_val = numpy.max(self.vertices, axis=0)
 		min_val = numpy.min(self.vertices, axis=0)
 
-		normalized_vertices = (self.vertices - min_val) / (max_val - min_val)
+		denominator = (max_val - min_val)
+		denominator[denominator == 0] = 1  # avoid division by zero
+
+		normalized_vertices = (self.vertices - min_val) / denominator
 		texture_coords = normalized_vertices[:, [0, 2]]
 
 		return texture_coords

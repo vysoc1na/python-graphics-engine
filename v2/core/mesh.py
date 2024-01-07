@@ -79,6 +79,10 @@ class Mesh():
 			)
 		# material data
 		self.shader_program['transparency'].write(self.material.transparency)
+		if hasattr(self.material, 'border_only'):
+			self.shader_program['border_only'].write(self.material.border_only)
+			self.shader_program['border_size'].write(self.material.border_size)
+			self.shader_program['border_color'].write(self.material.border_color)
 		# disable next render update
 		self.should_update = False
 
