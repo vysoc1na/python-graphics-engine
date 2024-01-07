@@ -1,3 +1,4 @@
+# from memory_profiler import profile
 import glm
 import numpy
 
@@ -14,22 +15,22 @@ class Mesh():
 		self.material = material
 		self.update_method = update_method
 		# setup shader, vbo, vao
+		self.should_update = True
 		self.shader_program = shader_program
 
 	def setup_vertex_data(self):
-		# geometry
-		vertices = self.geometry.vertices
-		normals = self.geometry.normals
 		# material colors
 		if type(self.material).__name__ == 'TerrainMaterial':
-			interpolated_colors = (1 - self.geometry.colors) * self.material.color_low + self.geometry.colors * self.material.color_high
-			colors = interpolated_colors
+			colors = (1 - self.geometry.colors) * self.material.color_low + self.geometry.colors * self.material.color_high
 		else:
-			color = self.material.color
-			colors = numpy.full_like(vertices, color, dtype = 'float32')
+			colors = numpy.full_like(self.geometry.vertices, self.material.color, dtype = 'float32')
 
 		# vertex data
-		self.vertex_data = numpy.hstack([vertices, normals, colors], dtype = 'float32')
+		self.vertex_data = numpy.hstack([
+			self.geometry.vertices,
+			self.geometry.normals,
+			colors,
+		], dtype = 'float32')
 
 	def get_model_matrix(self):
 		translation_matrix = glm.translate(glm.mat4(1.0), self.geometry.position)
@@ -41,6 +42,7 @@ class Mesh():
 
 		return model
 
+	# @profile
 	def render(self, projection, view, ctx, render_mode):
 		# get combined vertex data
 		self.setup_vertex_data()
@@ -62,18 +64,25 @@ class Mesh():
 		self.vao.render(render_mode)
 
 	def update(self, ctx):
-		# vbo
-		self.vbo = ctx.buffer(self.vertex_data)
-		# vao
-		self.vao = ctx.vertex_array(
-			self.shader_program, [
-				(self.vbo, '3f 3f 3f', 'in_position', 'in_normal', 'in_color'),
-			]
-		)
+		if self.should_update == True:
+			# clear previous buffers
+			if hasattr(self, 'vbo') and hasattr(self, 'vao'):
+				self.destroy()
+			# vbo
+			self.vbo = ctx.buffer(self.vertex_data)
+			# vao
+			self.vao = ctx.vertex_array(
+				self.shader_program, [
+					(self.vbo, '3f 3f 3f', 'in_position', 'in_normal', 'in_color'),
+				]
+			)
 		# material data
 		self.shader_program['transparency'].write(self.material.transparency)
+		# disable next render update
+		self.should_update = False
 
 	def destroy(self):
+		self.vbo.release()
 		self.vao.release()
 
 class MeshInstanced(Mesh):

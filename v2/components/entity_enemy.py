@@ -36,9 +36,13 @@ class Enemy(Entity):
 
 	def change_color_on_action(self, geometry, material):
 		if len(self.path):
-			material.color = glm.vec3(0, 0, 1)
+			color_state = glm.vec3(1, 0, 0)
 		else:
-			material.color = glm.vec3(1, 0, 0)
+			color_state = glm.vec3(0, 0, 1)
+
+		if glm.length(material.color - color_state) > 0:
+			material.color = color_state
+			self.mesh.should_update = True
 
 	def simple_logic(self, geometry, material):
 		self.wait_time -= self.renderer.delta_time
