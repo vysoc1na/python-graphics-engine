@@ -122,6 +122,7 @@ class PlaneGeometry(Geometry):
 	):
 		# plane config
 		self.corners = corners
+		self.colors = []
 		# init geometry
 		super().__init__(size, position, rotation, scale)
 
@@ -176,6 +177,7 @@ class TerrainPlaneGeometry(PlaneGeometry):
 
 		self.vertices = []
 		self.normals = []
+		self.colors = []
 
 		# place plane meshes in correct coordinates
 		for item in result_array:
@@ -188,3 +190,19 @@ class TerrainPlaneGeometry(PlaneGeometry):
 		self.vertices = numpy.concatenate(self.vertices)
 		# calculate normals for each triangle
 		self.normals = numpy.concatenate(self.normals)
+		# get height map color values
+		self.colors = self.get_colors_data()
+
+	def get_colors_data(self):
+		colors = numpy.array([])
+		max_value = numpy.max(self.vertices[::6, 1])
+		min_value = numpy.min(self.vertices[::6, 1])
+
+		for vertex in self.vertices[::6]:
+			normalized_vertex = (vertex[1] - min_value) / (max_value - min_value)
+			colors = numpy.append(
+				colors,
+				numpy.tile([normalized_vertex, normalized_vertex, normalized_vertex], (6, 1)),
+			)
+
+		return colors.reshape(-1, 3)

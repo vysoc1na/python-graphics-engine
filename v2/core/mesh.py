@@ -20,9 +20,14 @@ class Mesh():
 		# geometry
 		vertices = self.geometry.vertices
 		normals = self.geometry.normals
-		# material
-		color = self.material.color
-		colors = numpy.full_like(vertices, color, dtype = 'float32')
+		# material colors
+		if type(self.material).__name__ == 'TerrainMaterial':
+			interpolated_colors = (1 - self.geometry.colors) * self.material.color_low + self.geometry.colors * self.material.color_high
+			colors = interpolated_colors
+		else:
+			color = self.material.color
+			colors = numpy.full_like(vertices, color, dtype = 'float32')
+
 		# vertex data
 		self.vertex_data = numpy.hstack([vertices, normals, colors], dtype = 'float32')
 
