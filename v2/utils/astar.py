@@ -7,7 +7,10 @@ def heuristic(a, b):
 
 def get_neighbors(node, obstacles):
 	neighbors = []
-	for dir in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
+	for dir in [
+		(1, 0), (0, 1), (-1, 0), (0, -1),
+		(1, 1), (1, -1), (-1, 1), (-1, -1)
+	]:
 		neighbor = (node[0] + dir[0], node[1] + dir[1])
 		if neighbor not in obstacles:
 			neighbors.append(neighbor)
