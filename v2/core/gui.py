@@ -1,3 +1,4 @@
+# from memory_profiler import profile
 import numpy
 import glm
 import moderngl
@@ -12,8 +13,7 @@ class GuiElement():
 		renderer,
 		size = glm.vec2(80, 40),
 		position = glm.vec2(20, 20),
-		# 'TL' | 'TR' | 'BL' | 'BR'
-		corner = 'TL',
+		corner = 'TL', # 'TL' | 'TR' | 'BL' | 'BR'
 		on_click = debug_on_click,
 	):
 		self.renderer = renderer
@@ -42,6 +42,10 @@ class GuiElement():
 				(self.vbo, '2f', 'in_position'),
 			],
 		)
+
+	def handle_on_click(self):
+		if self.mouse_in_bound() == True:
+			self.on_click()
 
 	def get_vertices(self):
 		size = self.size / self.window_size
@@ -72,6 +76,7 @@ class GuiElement():
 
 		return glm.translate(glm.mat4(1.0), (x, y, 0))
 
+	# @profile
 	def render(self):
 		self.shader_program['model'].write(self.model)
 

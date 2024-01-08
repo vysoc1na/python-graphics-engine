@@ -93,7 +93,7 @@ class Renderer():
 			# gui mouse up event
 			if event.type == pygame.MOUSEBUTTONUP:
 				for item in gui.children:
-					item.on_click()
+					item.handle_on_click()
 
 	def render(self, gui, scene, camera):
 		# show fps in window caption
