@@ -19,20 +19,12 @@ camera = Camera(renderer)
 
 # generate obstacles data
 obstacles_data = []
-for x in range(16):
-	for z in range(16):
-		if (x == 1 or x == 15) and z > 0:
-			obstacles_data.append({ 'position': [x, 0, z] })
-		if (z == 1 or z == 15) and x > 1 and x < 15:
-			obstacles_data.append({ 'position': [x, 0, z] })
-
-factor = 20
-for theta in range(factor):
-	x = 8.5 + 4 * math.cos(math.radians(theta * (360 / factor)))
-	z = 8.5 + 4 * math.sin(math.radians(theta * (360 / factor)))
-	floor_x, floor_z = math.floor(x), math.floor(z)
-	if floor_x != 4 and floor_z != 4:
-		obstacles_data.append({ 'position': [floor_x, 0, floor_z] })
+for x in range(32):
+	for z in range(32):
+		if (x == 1 or x == 31) and z > 0:
+			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
+		if (z == 1 or z == 31) and x > 1 and x < 31:
+			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
 
 # Terrain
 terrain = Terrain(renderer)
@@ -45,7 +37,7 @@ obstacles = Obstacles(
 # Player Entity
 player = Player(
 	renderer,
-	position = (1, 0, 1),
+	position = (32, 0, 32),
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 	camera_component = camera,
@@ -53,7 +45,7 @@ player = Player(
 # Enemy Entity
 enemy = Enemy(
 	renderer,
-	position = (8, 0, 8),
+	position = (32, 0, 32),
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 )

@@ -28,13 +28,13 @@ class Player(Entity):
 
 	def reshape_entity(self):
 		self.geometry.position = self.spawn_point
-		self.material.color = glm.vec3(1, 1, 0)
+		self.material.color = glm.vec3(0, 0, 1)
 
 	def change_color_on_action(self, geometry, material):
 		if len(self.path):
-			color_state = glm.vec3(1, 1, 0)
-		else:
 			color_state = glm.vec3(0, 0, 1)
+		else:
+			color_state = glm.vec3(0, 0.5, 1)
 
 		if glm.length(material.color - color_state) > 0:
 			material.color = color_state

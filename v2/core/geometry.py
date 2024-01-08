@@ -19,10 +19,13 @@ class Geometry():
 		# setup vertex data
 		self.setup_vertex_data()
 
-	def calculate_normal(self, vertex1, vertex2, vertex3):
+	def calculate_normal(self, vertex1, vertex2, vertex3, switch_edges = False):
 		edge1 = vertex2 - vertex1
 		edge2 = vertex3 - vertex1
-		normal = numpy.cross(edge1, edge2)
+		if switch_edges == True:
+			normal = numpy.cross(edge2, edge1)
+		if switch_edges == False:
+			normal = numpy.cross(edge1, edge2)
 		normal /= numpy.linalg.norm(normal)
 		return normal
 
@@ -58,59 +61,35 @@ class BoxGeometry(Geometry):
 			[-0.5, -0.5, -0.5],
 			[-0.5, 0.5, 0.5],
 			[-0.5, 0.5, -0.5],
-			[-0.5, 0.5, 0.5],
-			[0.5, 0.5, -0.5],
-			[0.5, 0.5, 0.5],
-			[-0.5, 0.5, 0.5],
-			[-0.5, 0.5, -0.5],
-			[0.5, 0.5, -0.5],
+
 			[-0.5, -0.5, -0.5],
 			[0.5, -0.5, 0.5],
 			[0.5, -0.5, -0.5],
 			[-0.5, -0.5, -0.5],
 			[-0.5, -0.5, 0.5],
 			[0.5, -0.5, 0.5],
+
+			[-0.5, 0.5, 0.5],
+			[0.5, 0.5, -0.5],
+			[0.5, 0.5, 0.5],
+			[-0.5, 0.5, 0.5],
+			[-0.5, 0.5, -0.5],
+			[0.5, 0.5, -0.5],
+
 		], dtype = 'float32')
 		self.vertices *= self.size
 
-		self.normals = numpy.array([
-			[0, 0, 1],
-			[0, 0, 1],
-			[0, 0, 1],
-			[0, 0, 1],
-			[0, 0, 1],
-			[0, 0, 1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[0, 0, -1],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[1, 0, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[-1, 0, 0],
-			[0, -1, 0],
-			[0, -1, 0],
-			[0, -1, 0],
-			[0, -1, 0],
-			[0, -1, 0],
-			[0, -1, 0],
-		], dtype = 'float32')
+		normals = []
+		for i in range(0, len(self.vertices), 3):
+			face_vertices = self.vertices[i:i + 3]
+			if i >= 0 and i <= 27:
+				switch_edges = True
+			else:
+				switch_edges = False
+			face_normal = self.calculate_normal(face_vertices[0], face_vertices[1], face_vertices[2], switch_edges,)
+			normals.extend([face_normal] * 3)
+
+		self.normals = numpy.array(normals, dtype = 'float32')
 
 		self.texture_coords = numpy.array([
 			[0, 0],

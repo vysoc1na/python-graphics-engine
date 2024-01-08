@@ -16,7 +16,7 @@ class Terrain():
 	def on_init(self):
 		self.geometry = TerrainPlaneGeometry(
 			position = (0.5, 0, 0.5),
-			height_map = noise(16, 16, 8, 8, 0.2, 2, 0)
+			height_map = noise(64, 64, 8, 8, 0.2, 2, 0)
 		)
 		self.material = TerrainMaterial(
 			color_low = saturate(brighten((0.45, 0.33, 0.16), 0.5), 1.5), # brown

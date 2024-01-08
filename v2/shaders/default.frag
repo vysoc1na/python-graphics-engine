@@ -8,8 +8,8 @@ in vec2 frag_texture_coords;
 
 out vec4 color;
 
-uniform vec3 light_position = vec3(8, 8, 8);
-uniform vec3 ambient_color = vec3(0.2, 0.2, 0.2);
+uniform vec3 light_position = vec3(0, 64, 0);
+uniform vec3 ambient_color = vec3(0.5, 0.5, 0.5);
 uniform vec3 diffuse_color = vec3(1, 1, 1);
 // material data
 uniform bool border_only;

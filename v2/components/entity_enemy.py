@@ -38,7 +38,7 @@ class Enemy(Entity):
 		if len(self.path):
 			color_state = glm.vec3(1, 0, 0)
 		else:
-			color_state = glm.vec3(0, 0, 1)
+			color_state = glm.vec3(1, 0.5, 0)
 
 		if glm.length(material.color - color_state) > 0:
 			material.color = color_state
