@@ -42,6 +42,7 @@ class Entity():
 
 		# move along path of x-z coordinates
 		self.time_per_action = 500
+		self.elapsed_time = 0
 		self.path = []
 		self.target = None
 		self.update_method.append(self.move_to_target)
@@ -52,10 +53,12 @@ class Entity():
 			self.update_method.append(self.snap_camera)
 
 	def move_to_target(self, geometry, material):
-		if len(self.path) > 0:
-			if self.renderer.elapsed_time % self.time_per_action > self.time_per_action - self.renderer.delta_time:
-				target = self.path.pop(0)
-				self.target = glm.vec3(target[0], 0, target[1])
+		self.elapsed_time += self.renderer.delta_time
+
+		if len(self.path) > 0 and self.elapsed_time > self.time_per_action:
+			target = self.path.pop(0)
+			self.target = glm.vec3(target[0], 0, target[1])
+			self.elapsed_time = 0
 
 		if self.target:
 			geometry.position.x = lerp(geometry.position.x, self.target.x + 0.5, 0.05)

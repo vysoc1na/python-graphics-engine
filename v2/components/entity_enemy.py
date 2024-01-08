@@ -36,9 +36,9 @@ class Enemy(Entity):
 
 	def change_color_on_action(self, geometry, material):
 		if len(self.path):
-			color_state = glm.vec3(1, 0, 0)
-		else:
 			color_state = glm.vec3(1, 0.5, 0)
+		else:
+			color_state = glm.vec3(1, 0, 0)
 
 		if glm.length(material.color - color_state) > 0:
 			material.color = color_state

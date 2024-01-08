@@ -45,8 +45,6 @@ class Mesh():
 
 	# @profile
 	def render(self, projection, view, ctx, render_mode):
-		# get combined vertex data
-		self.setup_vertex_data()
 		# update callback
 		if isinstance(self.update_method, list):
 			for update_method in self.update_method:
@@ -55,6 +53,8 @@ class Mesh():
 		elif callable(self.update_method):
 			self.update_method(self.geometry, self.material)
 
+		# get combined vertex data
+		self.setup_vertex_data()
 		# update vertices
 		self.update(ctx)
 		# mvp
@@ -119,8 +119,6 @@ class MeshInstanced(Mesh):
 		return model
 
 	def render(self, projection, view, ctx, render_mode):
-		# get combined vertex data
-		self.setup_vertex_data()
 		# update callback
 		if isinstance(self.update_method, list):
 			for update_method in self.update_method:
@@ -129,6 +127,8 @@ class MeshInstanced(Mesh):
 		elif callable(self.update_method):
 			self.update_method(self.geometry, self.material, self.instance_data)
 
+		# get combined vertex data
+		self.setup_vertex_data()
 		# update vertices
 		self.update(ctx)
 		# mvp
