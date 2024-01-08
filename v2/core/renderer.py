@@ -51,21 +51,31 @@ class Renderer():
 			default_vertex_shader = vertex_shader_file.read()
 		with open('shaders/default.frag', 'r') as fragment_shader_file:
 			default_fragment_shader = fragment_shader_file.read()
+		# gui shader
+		with open('shaders/gui.vert', 'r') as vertex_shader_file:
+			gui_vertex_shader = vertex_shader_file.read()
+		with open('shaders/gui.frag', 'r') as fragment_shader_file:
+			gui_fragment_shader = fragment_shader_file.read()
 		# shaders dict
 		self.shaders = {
 			'default': self.ctx.program(
 				vertex_shader = default_vertex_shader,
 				fragment_shader = default_fragment_shader,
 			),
+			'gui': self.ctx.program(
+				vertex_shader = gui_vertex_shader,
+				fragment_shader = gui_fragment_shader,
+			),
 		}
 
-	def check_events(self, scene, camera):
+	def check_events(self, gui, scene, camera):
 		for event in pygame.event.get():
 			# global program close event
 			if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
 				# end run loop and destroy scene
 				self.is_running = False
 				scene.destroy()
+				gui.destroy()
 				# quit program
 				pygame.quit()
 				sys.exit()
@@ -80,8 +90,12 @@ class Renderer():
 			if event.type == pygame.MOUSEWHEEL:
 				# camera controls
 				camera.set_zoom(event)
+			# gui mouse up event
+			if event.type == pygame.MOUSEBUTTONUP:
+				for item in gui.children:
+					item.on_click()
 
-	def render(self, scene, camera):
+	def render(self, gui, scene, camera):
 		# show fps in window caption
 		pygame.display.set_caption(f'{round(self.clock.get_fps(), 2)}')
 		# clear original frame buffer
@@ -89,17 +103,19 @@ class Renderer():
 		self.ctx.clear(color = (1, 1, 1, 0), depth = True)
 		# render scene
 		scene.render(camera)
+		# render gui
+		gui.render()
 		# swap buffers
 		pygame.display.flip()
 
-	def run(self, scene, camera):
+	def run(self, gui, scene, camera):
 		self.is_running = True
 		# start the render loop
 		while self.is_running == True:
-			# render scene
-			self.render(scene, camera)
+			# render scene and gui
+			self.render(gui, scene, camera)
 			# check for event listeners
-			self.check_events(scene, camera)
+			self.check_events(gui, scene, camera)
 			# camera movement
 			camera.controls(self.delta_time)
 			# get next screen

@@ -1,6 +1,7 @@
 import math
 
 from core.renderer import Renderer
+from core.gui import Gui, GuiElement
 from core.scene import Scene
 from core.camera import Camera
 
@@ -12,6 +13,7 @@ from components.cursor import Cursor
 
 renderer = Renderer()
 
+gui = Gui(renderer)
 scene = Scene(renderer)
 camera = Camera(renderer)
 
@@ -63,6 +65,7 @@ cursor = Cursor(
 	obstacles_component = obstacles,
 	camera_component = camera,
 )
+
 # compose scene
 scene.children.append(player.mesh)
 scene.children.append(enemy.mesh)
@@ -70,4 +73,10 @@ scene.children.append(terrain.mesh)
 scene.children.append(cursor.mesh)
 scene.children.append(obstacles.mesh)
 
-renderer.run(scene, camera)
+# GUI Element
+button = GuiElement(renderer)
+
+# compose gui
+gui.children.append(button)
+
+renderer.run(gui, scene, camera)
