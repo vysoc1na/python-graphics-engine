@@ -2,3 +2,5 @@ moderngl
 numpy
 pygame
 PyGLM
+noise
+memory_profiler

@@ -1,103 +1,74 @@
-import pygame as pg
-import moderngl as mgl
-import sys
-import json
+import math
 
-from src.core.camera import Camera
-from src.core.light import Light
-from src.core.shader import ShaderProgram
-from src.core.scene import Scene
+from core.renderer import Renderer
+from core.gui import Gui, GuiElement
+from core.scene import Scene
+from core.camera import Camera
 
-from src.utils.queue import Queue
+from components.terrain import Terrain
+from components.obstacles import Obstacles
+from components.entity_player import Player
+from components.entity_enemy import Enemy
+from components.cursor import Cursor
 
-class Renderer():
-	def __init__(self, config, scene_config):
-		self.config = config
-		# init pygame modules
-		pg.init()
-		# global window size
-		self.window_size = (self.config['width'], self.config['height'])
-		self.render_mode = mgl.TRIANGLES
-		# opengl attribute setup
-		pg.display.gl_set_attribute(pg.GL_CONTEXT_MAJOR_VERSION, 3)
-		pg.display.gl_set_attribute(pg.GL_CONTEXT_MINOR_VERSION, 3)
-		pg.display.gl_set_attribute(pg.GL_CONTEXT_PROFILE_MASK, pg.GL_CONTEXT_PROFILE_CORE)
-		# opengl context
-		pg.display.set_mode(self.window_size, flags = pg.OPENGL | pg.DOUBLEBUF) # | pg.FULLSCREEN
-		self.ctx = mgl.create_context()
-		self.ctx.enable(mgl.DEPTH_TEST | mgl.BLEND)
-		self.ctx.blend_func = mgl.SRC_ALPHA, mgl.ONE_MINUS_SRC_ALPHA
-		self.ctx.blend_equation = mgl.FUNC_ADD
-		# global clock
-		self.clock = pg.time.Clock()
-		self.time = 0
-		self.delta_time = 0
-		# shader program
-		self.shader_program = ShaderProgram(self.ctx)
-		# scene
-		self.light = Light(position = (0, 40, 0), color = (1, 1, 1))
-		self.camera = Camera(self, position = (0, 0, 0), yaw = 145, pitch = -43)
-		self.scene = Scene(self, scene_config)
-		# actions
-		self.queue = Queue(self)
+renderer = Renderer()
 
-	def check_events(self):
-		for event in pg.event.get():
-			# event for program close
-			if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
-				self.scene.destroy()
-				pg.quit()
-				sys.exit()
+gui = Gui(renderer)
+scene = Scene(renderer)
+camera = Camera(renderer)
 
-			# pass event to models
-			self.scene.check_event(event)
+# generate obstacles data
+obstacles_data = []
+for x in range(32):
+	for z in range(32):
+		if (x == 1 or x == 31) and z > 0:
+			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
+		if (z == 1 or z == 31) and x > 1 and x < 31:
+			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
 
-			# switch between render modes
-			if event.type == pg.KEYDOWN and event.key == pg.K_t:
-				self.render_mode = mgl.TRIANGLES
-			if event.type == pg.KEYDOWN and event.key == pg.K_l:
-				self.render_mode = mgl.LINES
-			if event.type == pg.KEYDOWN and event.key == pg.K_p:
-				self.render_mode = mgl.POINTS
+# Terrain
+terrain = Terrain(renderer)
+# Terrain Obstacles
+obstacles = Obstacles(
+	renderer,
+	terrain_component = terrain,
+	obstacles_data = obstacles_data,
+)
+# Player Entity
+player = Player(
+	renderer,
+	position = (32, 0, 32),
+	terrain_component = terrain,
+	obstacles_component = obstacles,
+	camera_component = camera,
+)
+# Enemy Entity
+enemy = Enemy(
+	renderer,
+	position = (32, 0, 32),
+	terrain_component = terrain,
+	obstacles_component = obstacles,
+)
+# Cursor Entity
+cursor = Cursor(
+	renderer,
+	position = (0, 0, 0),
+	terrain_component = terrain,
+	obstacles_component = obstacles,
+	camera_component = camera,
+)
 
-	def render(self):
-		# clear frame buffer
-		self.ctx.screen.use()
-		self.ctx.clear(color = (1, 1, 1, 0))
-		# render scene
-		self.scene.render(self.time)
-		# swap buffers
-		pg.display.flip()
+# compose scene
+scene.children.append(player.mesh)
+scene.children.append(enemy.mesh)
+scene.children.append(terrain.mesh)
+scene.children.append(cursor.mesh)
+scene.children.append(obstacles.mesh)
 
-		caption = self.config['caption']
-		# caption - cursor position
-		cursor = self.scene.children['cursor'].data.position
-		caption = caption.replace('[cursorX]', f'{round(cursor.x, 1)}')
-		caption = caption.replace('[cursorZ]', f'{round(cursor.z, 1)}')
-		# caption - fps
-		caption = caption.replace('[fps]', f'{round(self.clock.get_fps(), 2)}')
-		# render caption
-		pg.display.set_caption(caption)
+# GUI Element
+button = GuiElement(renderer)
 
-	def run(self):
-		while True:
-			self.time = pg.time.get_ticks()
+# compose gui
+gui.children.append(button)
 
-			self.check_events()
-			self.camera.update()
-			self.render()
-
-			self.delta_time = self.clock.tick(60)
-			# process queue
-			self.queue.tick()
-
-with open('config/window.json', 'r') as window_config:
-	with open('config/scene.json', 'r') as scene_config:
-		app = Renderer(
-			config = json.load(window_config),
-			scene_config = json.load(scene_config),
-		)
-		app.run()
-
-
-
+renderer.run(gui, scene, camera)
