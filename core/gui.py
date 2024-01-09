@@ -11,35 +11,50 @@ class GuiElement():
 	def __init__(
 		self,
 		renderer,
-		size = glm.vec2(80, 40),
-		position = glm.vec2(20, 20),
+		font = None,
+		size = (160, 80),
+		position = (20, 20),
+		padding = (0, 0),
 		corner = 'TL', # 'TL' | 'TR' | 'BL' | 'BR'
 		on_click = debug_on_click,
+		text = None,
 	):
 		self.renderer = renderer
 		self.ctx = renderer.ctx
 		self.shader_program = renderer.shaders['gui']
 		self.window_size = glm.vec2(renderer.window_size)
 
-		self.size = size
-		self.position = position
+		self.font = font
+
+		self.padding = glm.vec2(padding)
+		self.size = glm.vec2(size) + self.padding
+		self.position = glm.vec2(position)
 		self.corner = corner
 		self.on_click = on_click
+		self.text = text
 
 		self.on_init()
 
 	def on_init(self):
 		self.color = glm.vec3(1, 0, 0)
-		self.hover_color = glm.vec3(0, 0, 1)
-		self.hold_color = glm.vec3(1, 0, 1)
+		self.hover_color = glm.vec3(1, 0.5, 0)
+		self.hold_color = glm.vec3(1, 1, 0)
 
 		self.vertices = self.get_vertices()
+		self.texture_coords = self.get_texture_coords()
 		self.model = self.get_model()
+		if self.text:
+			self.text_texture = self.get_text_texture()
+			self.text_texture.use(location = 1)
 
-		self.vbo = self.renderer.ctx.buffer(self.vertices)
+		self.vbo = self.renderer.ctx.buffer(numpy.hstack([
+			self.vertices,
+			self.texture_coords,
+		], dtype = 'float32'))
+
 		self.vao = self.renderer.ctx.vertex_array(
 			self.shader_program, [
-				(self.vbo, '2f', 'in_position'),
+				(self.vbo, '2f 2f', 'in_position', 'in_texture_coords'),
 			],
 		)
 
@@ -51,10 +66,18 @@ class GuiElement():
 		size = self.size / self.window_size
 
 		return numpy.array([
-			-size.x, -size.y,
-			size.x, -size.y,
-			size.x, size.y,
-			-size.x, size.y,
+			[-size.x, -size.y],
+			[size.x, -size.y],
+			[size.x, size.y],
+			[-size.x, size.y],
+		], dtype = 'float32')
+
+	def get_texture_coords(self):
+		return numpy.array([
+			[0.0, 0.0],
+			[1.0, 0.0],
+			[1.0, 1.0],
+			[0.0, 1.0],
 		], dtype = 'float32')
 
 	def get_model(self):
@@ -76,6 +99,12 @@ class GuiElement():
 
 		return glm.translate(glm.mat4(1.0), (x, y, 0))
 
+	def get_text_texture(self):
+		image = self.font.get_texture(self.text, self.padding)
+		texture = self.renderer.ctx.texture(image.size, 4, image.tobytes())
+		#texture.build_mipmaps()
+		return texture
+
 	# @profile
 	def render(self):
 		self.shader_program['model'].write(self.model)
@@ -87,6 +116,12 @@ class GuiElement():
 				self.shader_program['in_color'].write(self.hover_color)
 		else:
 			self.shader_program['in_color'].write(self.color)
+
+		if self.text:
+			self.shader_program['textured'].value = 1
+			self.shader_program['text_texture'].value = 1
+		else:
+			self.shader_program['textured'].value = 0
 
 		self.vao.render(moderngl.TRIANGLE_FAN)
 

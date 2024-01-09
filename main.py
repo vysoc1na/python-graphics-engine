@@ -1,6 +1,7 @@
 import math
 
 from core.renderer import Renderer
+from core.font import Font
 from core.gui import Gui, GuiElement
 from core.scene import Scene
 from core.camera import Camera
@@ -13,7 +14,9 @@ from components.cursor import Cursor
 
 renderer = Renderer()
 
+font = Font()
 gui = Gui(renderer)
+
 scene = Scene(renderer)
 camera = Camera(renderer)
 
@@ -66,7 +69,13 @@ scene.children.append(cursor.mesh)
 scene.children.append(obstacles.mesh)
 
 # GUI Element
-button = GuiElement(renderer)
+button = GuiElement(
+	renderer,
+	font,
+	text = 'TEST ELEMENT',
+	size = (84*5, 8*5),
+	padding = (32, 16),
+)
 
 # compose gui
 gui.children.append(button)
