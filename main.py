@@ -69,12 +69,18 @@ scene.children.append(cursor.mesh)
 scene.children.append(obstacles.mesh)
 
 # GUI Element
+def respawn():
+	player.path = []
+	player.target.x = 32
+	player.target.z = 32
+
 button = GuiElement(
 	renderer,
 	font,
-	text = 'test button',
+	text = 'respawn',
 	size = 'auto',
 	padding = (16, 16),
+	on_click = respawn
 )
 
 # compose gui
