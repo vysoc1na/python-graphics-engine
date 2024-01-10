@@ -10,6 +10,7 @@ from core.scene import Scene
 from core.camera import Camera
 
 from gui.button import Button
+from gui.text import Text
 from gui.list import List
 
 from components.terrain import Terrain
@@ -65,7 +66,6 @@ cursor = Cursor(
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 	camera_component = camera,
-	font = font,
 )
 
 # compose scene
@@ -89,8 +89,11 @@ button_quit = Button(renderer, font, text = 'quit', on_click = close_window)
 
 buttons_list = List(renderer, elements = [button_respawn, button_quit])
 
+# Debug Text
+debug_text = Text(renderer, font, text = '[console]: debug console will be here!', corner = 'BL')
+
 # compose gui
 gui.children.append(buttons_list)
-gui.children.append(cursor.gui_text)
+gui.children.append(debug_text)
 
 renderer.run(gui, scene, camera)
