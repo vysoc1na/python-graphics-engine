@@ -19,8 +19,8 @@ class GuiElement():
 		on_click = debug_on_click,
 		text = None,
 		color = (1, 1, 1),
-		hover_color = (0.9, 0.9, 0.9),
-		hold_color = (0.8, 0.8, 0.8),
+		color_hover = (0.9, 0.9, 0.9),
+		color_hold = (0.8, 0.8, 0.8),
 		text_color = (1, 0, 0),
 	):
 		self.renderer = renderer
@@ -43,10 +43,15 @@ class GuiElement():
 		self.text_color = glm.vec3(text_color)
 
 		self.color = glm.vec3(color)
-		self.hover_color = glm.vec3(hover_color)
-		self.hold_color = glm.vec3(hold_color)
+		self.color_hover = glm.vec3(color_hover)
+		self.color_hold = glm.vec3(color_hold)
+
+		self.setup()
 
 		self.on_init()
+
+	def setup(self):
+		print('default setup')
 
 	def on_init(self):
 		self.vertices = self.get_vertices()
@@ -54,7 +59,7 @@ class GuiElement():
 		self.model = self.get_model()
 		if self.text:
 			self.text_texture = self.get_text_texture()
-			self.text_texture.use(location = 1)
+			self.text_texture.use(1)
 
 		self.vbo = self.renderer.ctx.buffer(numpy.hstack([
 			self.vertices,
@@ -69,7 +74,8 @@ class GuiElement():
 
 	def handle_on_click(self):
 		if self.mouse_in_bound() == True:
-			self.on_click()
+			if self.on_click != None:
+				self.on_click()
 
 	def get_vertices(self):
 		size = self.size / self.window_size
@@ -116,15 +122,21 @@ class GuiElement():
 
 	# @profile
 	def render(self):
+		self.text_texture.use(1)
 		self.shader_program['model'].write(self.model)
 
-		if self.mouse_in_bound() == True:
-			if pygame.mouse.get_pressed()[0] == True:
-				self.shader_program['in_color'].write(self.hold_color)
-			else:
-				self.shader_program['in_color'].write(self.hover_color)
+		if self.color == None:
+			self.shader_program['in_color'].write(glm.vec3(0, 0, 0))
+			self.shader_program['in_color_transparency'].write(glm.float_(0))
 		else:
-			self.shader_program['in_color'].write(self.color)
+			self.shader_program['in_color_transparency'].write(glm.float_(1))
+			if self.mouse_in_bound() == True:
+				if pygame.mouse.get_pressed()[0] == True:
+					self.shader_program['in_color'].write(self.color_hold)
+				else:
+					self.shader_program['in_color'].write(self.color_hover)
+			else:
+				self.shader_program['in_color'].write(self.color)
 
 		if self.text:
 			self.shader_program['textured'].value = 1

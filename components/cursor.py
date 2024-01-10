@@ -12,6 +12,8 @@ from core.mesh import Mesh
 
 from components.entity import Entity
 
+from gui.text import Text
+
 class Cursor(Entity):
 	def __init__(
 		self,
@@ -20,6 +22,7 @@ class Cursor(Entity):
 		terrain_component,
 		camera_component,
 		obstacles_component,
+		font,
 	):
 		super().__init__(renderer, terrain_component, obstacles_component)
 		# save camera instance
@@ -30,6 +33,9 @@ class Cursor(Entity):
 		self.reshape_entity()
 		# store terrain corner positions
 		self.corners = get_terrain_data(self.terrain_component.geometry.height_map)
+
+		# cursor gui element
+		self.gui_text = Text(renderer, font, text = 'debug')
 
 	def reshape_entity(self):
 		self.geometry = PlaneGeometry(
@@ -66,8 +72,14 @@ class Cursor(Entity):
 				geometry.corners = item['corners']
 				# render new position and shape
 				geometry.setup_vertex_data()
-				geometry.position.x = math.floor(intersection_point.x) + 0.5
+				geometry.position.x = floor_x + 0.5
 				geometry.position.y = 0.05
-				geometry.position.z = math.floor(intersection_point.z) + 0.5
+				geometry.position.z = floor_z + 0.5
 				# call for new vbo update
 				self.mesh.should_update = True
+				# update gui text component
+				x, y = pygame.mouse.get_pos()
+				self.gui_text.text = f'{floor_x} - {floor_z}'
+				self.gui_text.position = glm.vec2(x - self.gui_text.size.x / 2, y + 16)
+				self.gui_text.resize()
+				self.gui_text.on_init()

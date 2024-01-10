@@ -17,12 +17,12 @@ out vec3 frag_position;
 out vec2 frag_texture_coords;
 
 void main() {
-    gl_Position = projection * view * model * vec4(in_position, 1.0);
+	gl_Position = projection * view * model * vec4(in_position, 1.0);
 
-    frag_normal = mat3(transpose(inverse(model))) * in_normal;
-    frag_color = vec4(in_color, 1);
-    frag_transparency = transparency;
-    frag_position = vec3(model * vec4(in_position, 1.0));
+	frag_normal = mat3(transpose(inverse(model))) * in_normal;
+	frag_color = vec4(in_color, 1);
+	frag_transparency = transparency;
+	frag_position = vec3(model * vec4(in_position, 1.0));
 
-    frag_texture_coords = texture_coords;
+	frag_texture_coords = texture_coords;
 }

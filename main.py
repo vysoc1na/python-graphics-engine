@@ -1,10 +1,16 @@
+import pygame
+import sys
 import math
+import glm
 
 from core.renderer import Renderer
 from core.font import Font
-from core.gui import Gui, GuiElement
+from core.gui import Gui
 from core.scene import Scene
 from core.camera import Camera
+
+from gui.button import Button
+from gui.list import List
 
 from components.terrain import Terrain
 from components.obstacles import Obstacles
@@ -59,6 +65,7 @@ cursor = Cursor(
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 	camera_component = camera,
+	font = font,
 )
 
 # compose scene
@@ -68,22 +75,22 @@ scene.children.append(terrain.mesh)
 scene.children.append(cursor.mesh)
 scene.children.append(obstacles.mesh)
 
-# GUI Element
+# Button List
 def respawn():
 	player.path = []
-	player.target.x = 32
-	player.target.z = 32
+	player.target = glm.vec3(32, 0, 32)
 
-button = GuiElement(
-	renderer,
-	font,
-	text = 'respawn',
-	size = 'auto',
-	padding = (16, 16),
-	on_click = respawn
-)
+def close_window():
+	pygame.quit()
+	sys.exit()
+
+button_respawn = Button(renderer, font, text = 'respawn', on_click = respawn)
+button_quit = Button(renderer, font, text = 'quit', on_click = close_window)
+
+buttons_list = List(renderer, elements = [button_respawn, button_quit])
 
 # compose gui
-gui.children.append(button)
+gui.children.append(buttons_list)
+gui.children.append(cursor.gui_text)
 
 renderer.run(gui, scene, camera)
