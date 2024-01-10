@@ -18,6 +18,10 @@ class GuiElement():
 		corner = 'TL', # 'TL' | 'TR' | 'BL' | 'BR'
 		on_click = debug_on_click,
 		text = None,
+		color = (1, 1, 1),
+		hover_color = (0.9, 0.9, 0.9),
+		hold_color = (0.8, 0.8, 0.8),
+		text_color = (1, 0, 0),
 	):
 		self.renderer = renderer
 		self.ctx = renderer.ctx
@@ -27,19 +31,24 @@ class GuiElement():
 		self.font = font
 
 		self.padding = glm.vec2(padding)
-		self.size = glm.vec2(size) + self.padding
+		if size == 'auto':
+			self.size = glm.vec2(6 * len(text), 8) + self.padding
+		else:
+			self.size = glm.vec2(size) + self.padding
 		self.position = glm.vec2(position)
 		self.corner = corner
 		self.on_click = on_click
+
 		self.text = text
+		self.text_color = glm.vec3(text_color)
+
+		self.color = glm.vec3(color)
+		self.hover_color = glm.vec3(hover_color)
+		self.hold_color = glm.vec3(hold_color)
 
 		self.on_init()
 
 	def on_init(self):
-		self.color = glm.vec3(1, 0, 0)
-		self.hover_color = glm.vec3(1, 0.5, 0)
-		self.hold_color = glm.vec3(1, 1, 0)
-
 		self.vertices = self.get_vertices()
 		self.texture_coords = self.get_texture_coords()
 		self.model = self.get_model()
@@ -100,7 +109,7 @@ class GuiElement():
 		return glm.translate(glm.mat4(1.0), (x, y, 0))
 
 	def get_text_texture(self):
-		image = self.font.get_texture(self.text, self.padding)
+		image = self.font.get_texture(self.text, self.padding, self.text_color)
 		texture = self.renderer.ctx.texture(image.size, 4, image.tobytes())
 		#texture.build_mipmaps()
 		return texture

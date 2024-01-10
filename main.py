@@ -72,9 +72,9 @@ scene.children.append(obstacles.mesh)
 button = GuiElement(
 	renderer,
 	font,
-	text = 'TEST ELEMENT',
-	size = (84*5, 8*5),
-	padding = (32, 16),
+	text = 'test button',
+	size = 'auto',
+	padding = (16, 16),
 )
 
 # compose gui
