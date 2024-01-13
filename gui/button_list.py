@@ -1,6 +1,6 @@
 import glm
 
-class List():
+class ButtonList():
 	def __init__(
 		self,
 		renderer,
@@ -15,7 +15,13 @@ class List():
 
 	def on_init(self):
 		height = self.elements[0].size.y
-		index = 0
+		corner = self.elements[0].corner
+
+		if corner == 'TL' or corner == 'TR':
+			index = 0
+		if corner == 'BL' or corner == 'BR':
+			index = len(self.elements) - 1
+
 		for element in self.elements:
 			element.position = glm.vec2(
 				element.position.x,
@@ -23,7 +29,10 @@ class List():
 			)
 			element.on_init()
 
-			index += 1
+			if corner == 'TL' or corner == 'TR':
+				index += 1
+			if corner == 'BL' or corner == 'BR':
+				index -= 1
 
 	def handle_on_click(self):
 		for element in self.elements:

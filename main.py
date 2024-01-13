@@ -10,8 +10,8 @@ from core.scene import Scene
 from core.camera import Camera
 
 from gui.button import Button
-from gui.text import Text
-from gui.list import List
+from gui.button_list import ButtonList
+from gui.console import Console
 
 from components.terrain import Terrain
 from components.obstacles import Obstacles
@@ -84,16 +84,16 @@ def close_window():
 	pygame.quit()
 	sys.exit()
 
-button_respawn = Button(renderer, font, text = 'respawn', on_click = respawn)
-button_quit = Button(renderer, font, text = 'quit', on_click = close_window)
+button_respawn = Button(renderer, font, text = 'respawn', on_click = respawn, corner = 'TL')
+button_quit = Button(renderer, font, text = 'quit', on_click = close_window, corner = 'TL')
 
-buttons_list = List(renderer, elements = [button_respawn, button_quit])
+button_list = ButtonList(renderer, elements = [button_respawn, button_quit])
 
-# Debug Text
-debug_text = Text(renderer, font, text = '[console]: debug console will be here!', corner = 'BL')
+# Debug Console
+console = Console(renderer, font)
 
 # compose gui
-gui.children.append(buttons_list)
-gui.children.append(debug_text)
+gui.children.append(button_list)
+gui.children.append(console)
 
 renderer.run(gui, scene, camera)
