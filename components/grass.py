@@ -54,7 +54,7 @@ class Grass():
 
 	def on_init(self):
 		self.geometry = GrassBlade(data = self.blades_data)
-		self.material = SolidMaterial(color = saturate((0.48, 0.65, 0.29), 1.5))
+		self.material = SolidMaterial(color = saturate((0.48, 0.65, 0.29), 1.8))
 		self.mesh = Mesh(
 			geometry = self.geometry,
 			material = self.material,

@@ -4,6 +4,7 @@ import math
 import glm
 
 from utils.terrain_data import get_terrain_data
+from utils.interpolate import interpolate
 
 from core.renderer import Renderer
 from core.font import Font
@@ -34,12 +35,14 @@ camera = Camera(renderer)
 terrain = Terrain(renderer)
 # generate obstacles data
 obstacles_data = []
-treshold = -0.2
 for item in get_terrain_data(terrain.geometry.height_map):
 	corners = item['corners']
-	if corners[0] < treshold or corners[1] < treshold or corners[2] < treshold or corners[3] < treshold:
+	top_interpolated = interpolate(corners[0], corners[1], 0.5)
+	bottom_interpolated = interpolate(corners[2], corners[3], 0.5)
+	interpolated_height = interpolate(top_interpolated, bottom_interpolated, 0.5)
+	if interpolated_height < -0.15:
 		position = item['position']
-		obstacles_data.append({ 'position': [position.y + 1, 0, position.x + 1] })
+		obstacles_data.append({ 'position': [position.y + 1, -0.8, position.x + 1] })
 # Terrain Obstacles
 obstacles = Obstacles(
 	renderer,
