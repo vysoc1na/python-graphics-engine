@@ -3,6 +3,8 @@ import sys
 import math
 import glm
 
+from utils.terrain_data import get_terrain_data
+
 from core.renderer import Renderer
 from core.font import Font
 from core.gui import Gui
@@ -18,6 +20,7 @@ from components.obstacles import Obstacles
 from components.entity_player import Player
 from components.entity_enemy import Enemy
 from components.cursor import Cursor
+from components.grass import Grass
 
 renderer = Renderer()
 
@@ -27,17 +30,16 @@ gui = Gui(renderer)
 scene = Scene(renderer)
 camera = Camera(renderer)
 
-# generate obstacles data
-obstacles_data = []
-for x in range(32):
-	for z in range(32):
-		if (x == 1 or x == 31) and z > 0:
-			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
-		if (z == 1 or z == 31) and x > 1 and x < 31:
-			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
-
 # Terrain
 terrain = Terrain(renderer)
+# generate obstacles data
+obstacles_data = []
+treshold = -0.2
+for item in get_terrain_data(terrain.geometry.height_map):
+	corners = item['corners']
+	if corners[0] < treshold or corners[1] < treshold or corners[2] < treshold or corners[3] < treshold:
+		position = item['position']
+		obstacles_data.append({ 'position': [position.y + 1, 0, position.x + 1] })
 # Terrain Obstacles
 obstacles = Obstacles(
 	renderer,
@@ -68,10 +70,20 @@ cursor = Cursor(
 	camera_component = camera,
 )
 
+# Grass
+grass = Grass(
+	renderer,
+	position = (32, 1, 32),
+	terrain_component = terrain,
+	obstacles_component = obstacles,
+)
+
 # compose scene
 scene.children.append(player.mesh)
 scene.children.append(enemy.mesh)
 scene.children.append(terrain.mesh)
+scene.children.append(grass.mesh)
+
 scene.children.append(cursor.mesh)
 scene.children.append(obstacles.mesh)
 

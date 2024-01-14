@@ -138,6 +138,7 @@ class MeshInstanced(Mesh):
 		for instance_index in range(len(self.instance_data)):
 			model_matrix = self.get_model_matrix(instance_index)
 			self.shader_program['model'].write(model_matrix)
+			self.shader_program['instance_index'].write(glm.float_(instance_index / len(self.instance_data)))
 			# render
 			self.vao.render(render_mode, instances = 1)
 
