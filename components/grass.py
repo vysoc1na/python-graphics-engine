@@ -44,9 +44,9 @@ class Grass():
 			z = position[2] - 0.5
 			for density in range(math.floor(self.density * y)):
 				offset = glm.vec3(random.uniform(0.1, 1.0) - 0.5, 0, random.uniform(0.1, 1.0) - 0.5)
-				scale = random.uniform(y * 0.5, y * 1.5)
+				scale = random.uniform((y + 0.2) * 0.5, (y + 0.2) * 1.5)
 				self.blades_data.append({
-					'position': glm.vec3(x, y, z) + offset,
+					'position': glm.vec3(x, y - 0.2, z) + offset,
 					'scale': (scale, scale, scale),
 				})
 
