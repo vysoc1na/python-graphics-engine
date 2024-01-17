@@ -11,6 +11,7 @@ from core.font import Font
 from core.gui import Gui
 from core.scene import Scene
 from core.camera import Camera
+from core.particles import Particles
 
 from gui.button import Button
 from gui.button_list import ButtonList
@@ -72,7 +73,6 @@ cursor = Cursor(
 	obstacles_component = obstacles,
 	camera_component = camera,
 )
-
 # Grass
 grass = Grass(
 	renderer,
@@ -80,20 +80,29 @@ grass = Grass(
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 )
+# Particles
+particles = Particles(
+	renderer,
+	position = (32, 0, 32),
+	radius = (32, 8, 32),
+    color = (0, 1, 0.5),
+    transparency = 0.5,
+)
 
 # compose scene
 scene.children.append(player.mesh)
 scene.children.append(enemy.mesh)
 scene.children.append(terrain.mesh)
 scene.children.append(grass.mesh)
-
 scene.children.append(cursor.mesh)
 scene.children.append(obstacles.mesh)
+# compose particles scene
+scene.children.append(particles)
 
 # Button List
 def respawn():
 	player.path = []
-	player.target = glm.vec3(32, 0, 32)
+	player.target = glm.vec3(0, 0, 0)
 
 def close_window():
 	pygame.quit()
