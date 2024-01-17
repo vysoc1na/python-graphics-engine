@@ -83,8 +83,8 @@ grass = Grass(
 # Particles
 particles = Particles(
 	renderer,
-	position = (32, 0, 32),
-	radius = (32, 8, 32),
+	position = (32, -1, 32),
+	radius = (32, 1, 32),
     color = (0, 1, 0.5),
     transparency = 0.5,
 )
@@ -102,7 +102,7 @@ scene.children.append(particles)
 # Button List
 def respawn():
 	player.path = []
-	player.target = glm.vec3(0, 0, 0)
+	player.target = glm.vec3(32, 0, 32)
 
 def close_window():
 	pygame.quit()
