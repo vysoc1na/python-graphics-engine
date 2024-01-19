@@ -56,6 +56,14 @@ class Renderer():
 			gui_vertex_shader = vertex_shader_file.read()
 		with open('shaders/gui.frag', 'r') as fragment_shader_file:
 			gui_fragment_shader = fragment_shader_file.read()
+		# grass shader
+		with open('shaders/grass.vert', 'r') as vertex_shader_file:
+			grass_vertex_shader = vertex_shader_file.read()
+		# particles shader
+		with open('shaders/particles.vert', 'r') as vertex_shader_file:
+			particles_vertex_shader = vertex_shader_file.read()
+		with open('shaders/particles.frag', 'r') as fragment_shader_file:
+			particles_fragment_shader = fragment_shader_file.read()
 		# shaders dict
 		self.shaders = {
 			'default': self.ctx.program(
@@ -65,6 +73,14 @@ class Renderer():
 			'gui': self.ctx.program(
 				vertex_shader = gui_vertex_shader,
 				fragment_shader = gui_fragment_shader,
+			),
+			'grass': self.ctx.program(
+				vertex_shader = grass_vertex_shader,
+				fragment_shader = default_fragment_shader,
+			),
+			'particles': self.ctx.program(
+				vertex_shader = particles_vertex_shader,
+				fragment_shader = particles_fragment_shader,
 			),
 		}
 

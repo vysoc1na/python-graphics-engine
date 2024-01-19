@@ -3,11 +3,15 @@ import sys
 import math
 import glm
 
+from utils.terrain_data import get_terrain_data
+from utils.interpolate import interpolate
+
 from core.renderer import Renderer
 from core.font import Font
 from core.gui import Gui
 from core.scene import Scene
 from core.camera import Camera
+from core.particles import Particles
 
 from gui.button import Button
 from gui.button_list import ButtonList
@@ -18,6 +22,7 @@ from components.obstacles import Obstacles
 from components.entity_player import Player
 from components.entity_enemy import Enemy
 from components.cursor import Cursor
+from components.grass import Grass
 
 renderer = Renderer()
 
@@ -27,17 +32,18 @@ gui = Gui(renderer)
 scene = Scene(renderer)
 camera = Camera(renderer)
 
-# generate obstacles data
-obstacles_data = []
-for x in range(32):
-	for z in range(32):
-		if (x == 1 or x == 31) and z > 0:
-			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
-		if (z == 1 or z == 31) and x > 1 and x < 31:
-			obstacles_data.append({ 'position': [x + 16, 0, z + 16] })
-
 # Terrain
 terrain = Terrain(renderer)
+# generate obstacles data
+obstacles_data = []
+for item in get_terrain_data(terrain.geometry.height_map):
+	corners = item['corners']
+	top_interpolated = interpolate(corners[0], corners[1], 0.5)
+	bottom_interpolated = interpolate(corners[2], corners[3], 0.5)
+	interpolated_height = interpolate(top_interpolated, bottom_interpolated, 0.5)
+	if interpolated_height < -0.15:
+		position = item['position']
+		obstacles_data.append({ 'position': [position.y + 1, -0.8, position.x + 1] })
 # Terrain Obstacles
 obstacles = Obstacles(
 	renderer,
@@ -67,13 +73,31 @@ cursor = Cursor(
 	obstacles_component = obstacles,
 	camera_component = camera,
 )
+# Grass
+grass = Grass(
+	renderer,
+	position = (32, 1, 32),
+	terrain_component = terrain,
+	obstacles_component = obstacles,
+)
+# Particles
+particles = Particles(
+	renderer,
+	position = (32, -1, 32),
+	radius = (32, 1, 32),
+    color = (0, 1, 0.5),
+    transparency = 0.5,
+)
 
 # compose scene
 scene.children.append(player.mesh)
 scene.children.append(enemy.mesh)
 scene.children.append(terrain.mesh)
+scene.children.append(grass.mesh)
 scene.children.append(cursor.mesh)
 scene.children.append(obstacles.mesh)
+# compose particles scene
+scene.children.append(particles)
 
 # Button List
 def respawn():

@@ -242,3 +242,47 @@ class TerrainPlaneGeometry(PlaneGeometry):
 			)
 
 		return colors.reshape(-1, 3)
+
+class GrassBlade(Geometry):
+	def __init__(
+		self,
+		size = (1, 1, 1),
+		position = (0, 0, 0),
+		rotation = (0, 0, 0),
+		scale = (1, 1, 1),
+		data = [],
+	):
+		self.data = data
+
+		super().__init__(size, position, rotation, scale)
+
+	def setup_vertex_data(self):
+		self.vertices = []
+		self.texture_coords = []
+
+		for item in self.data:
+			for state in range(2):
+				position = item['position']
+				scale = item['scale']
+				x = position[0]
+				y = position[1]
+				z = position[2]
+				scale_x = scale[0]
+				scale_y = scale[1]
+				scale_z = scale[2]
+				if state == 0:
+					self.vertices.append([(-0.1 * scale_x) + x, 0 + y, 0 + z])
+					self.vertices.append([(0.1 * scale_z) + x, 0 + y, 0 + z])
+					self.vertices.append([0 + x, (1 * scale_y) + y, 0 + z])
+				if state == 1:
+					self.vertices.append([0 + x, 0 + y, (-0.1 * scale_z) + z])
+					self.vertices.append([0 + x, 0 + y, (0.1 * scale_z) + z])
+					self.vertices.append([0 + x, (1 * scale_y) + y, 0 + z])
+				self.texture_coords.append([0, 0])
+				self.texture_coords.append([1, 0])
+				self.texture_coords.append([0.5, 1])
+
+		self.vertices = numpy.array(self.vertices, dtype = 'float32')
+		self.texture_coords = numpy.array(self.texture_coords, dtype = 'float32')
+
+		self.normals = numpy.full_like(self.vertices, [0, 0, 1], dtype = 'float32')
