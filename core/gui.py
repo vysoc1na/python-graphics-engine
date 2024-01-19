@@ -48,12 +48,12 @@ class GuiElement():
 
 		self.setup()
 
-		self.on_init()
+		self.init()
 
 	def setup(self):
 		print('default setup')
 
-	def on_init(self):
+	def init(self):
 		self.vertices = self.get_vertices()
 		self.texture_coords = self.get_texture_coords()
 		self.model = self.get_model()

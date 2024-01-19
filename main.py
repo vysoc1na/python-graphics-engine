@@ -28,6 +28,7 @@ renderer = Renderer()
 
 font = Font()
 gui = Gui(renderer)
+console = Console(renderer, font)
 
 scene = Scene(renderer)
 camera = Camera(renderer)
@@ -57,6 +58,7 @@ player = Player(
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 	camera_component = camera,
+	logger = console,
 )
 # Enemy Entity
 enemy = Enemy(
@@ -64,6 +66,7 @@ enemy = Enemy(
 	position = (32, 0, 32),
 	terrain_component = terrain,
 	obstacles_component = obstacles,
+	logger = console,
 )
 # Cursor Entity
 cursor = Cursor(
@@ -101,6 +104,7 @@ scene.children.append(particles)
 
 # Button List
 def respawn():
+	console.add('respawn "player" at x: 32, z: 32')
 	player.path = []
 	player.target = glm.vec3(32, 0, 32)
 
@@ -112,9 +116,6 @@ button_respawn = Button(renderer, font, text = 'respawn', on_click = respawn, co
 button_quit = Button(renderer, font, text = 'quit', on_click = close_window, corner = 'TL')
 
 button_list = ButtonList(renderer, elements = [button_respawn, button_quit])
-
-# Debug Console
-console = Console(renderer, font)
 
 # compose gui
 gui.children.append(button_list)
