@@ -13,7 +13,13 @@ class Enemy(Entity):
 		position,
 		terrain_component,
 		obstacles_component,
+		logger = None,
+		name = 'enemy',
+		walk_radius = 16,
+		wait_time = (5000, 10000),
 	):
+		self.logger = logger
+		self.name = name
 		super().__init__(renderer, terrain_component, obstacles_component)
 		# setup states
 		self.IDLE = 0
@@ -21,8 +27,9 @@ class Enemy(Entity):
 		self.WALKING = 2
 		self.state = self.IDLE
 		# entity config
-		self.radius = 4
-		self.wait_time = 1000
+		self.radius = walk_radius
+		self.wait_time_options = wait_time
+		self.wait_time = wait_time[0]
 		self.spawn_point = glm.vec3(position) + glm.vec3(0.5, 0, 0.5)
 		# modify mesh
 		self.reshape_entity()
@@ -50,8 +57,11 @@ class Enemy(Entity):
 
 		# generate random wait time when idle
 		if self.state == self.IDLE:
-			self.wait_time = random.uniform(2000, 5000)
+			self.wait_time = random.uniform(self.wait_time_options[0], self.wait_time_options[1])
 			self.state = self.WAITING
+
+			if self.logger != None:
+				self.logger.add(f'idling "{self.name}" for {round(self.wait_time / 1000, 2)} seconds')
 
 		# generate walk path on wait time finish
 		if self.state == self.WAITING and len(self.path) == 0 and self.wait_time == 0:
@@ -67,6 +77,9 @@ class Enemy(Entity):
 
 			self.path = astar(self.obstacles, start, end)
 			self.state = self.WALKING
+
+			if self.logger != None:
+				self.logger.add(f'moving "{self.name}" from {start} to {end}')
 
 		# go back to idle when finished walking
 		if self.state == self.WALKING and len(self.path) == 0:

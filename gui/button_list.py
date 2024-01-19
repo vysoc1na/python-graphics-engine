@@ -27,7 +27,7 @@ class ButtonList():
 				element.position.x,
 				index * (height + self.spacing) + element.position.y,
 			)
-			element.on_init()
+			element.init()
 
 			if corner == 'TL' or corner == 'TR':
 				index += 1
