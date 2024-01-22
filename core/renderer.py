@@ -44,6 +44,8 @@ class Renderer():
 		self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
 		self.ctx.blend_func = moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA
 		self.ctx.blend_equation = moderngl.FUNC_ADD
+		# auto released unused objects
+		self.ctx.gc_mode = 'auto'
 
 	def setup_shaders(self):
 		# default shader
