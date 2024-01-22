@@ -67,7 +67,7 @@ class Cursor(Entity):
 				# render new position and shape
 				geometry.setup_vertex_data()
 				geometry.position.x = floor_x + 0.5
-				geometry.position.y = 0.05
+				geometry.position.y = 0.01
 				geometry.position.z = floor_z + 0.5
 				# call for new vbo update
 				self.mesh.should_update = True

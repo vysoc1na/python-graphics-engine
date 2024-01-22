@@ -26,8 +26,8 @@ class Camera():
 		# constants
 		fov = glm.radians(45.0)
 		aspect_ratio = self.renderer.config['width'] / self.renderer.config['height']
-		near_plane = 0.1
-		far_plane = 100
+		near_plane = 1
+		far_plane = 64
 		# mvp
 		self.m_projection = glm.perspective(fov, aspect_ratio, near_plane, far_plane)
 		self.m_view = glm.lookAt(self.position, self.position + self.front, self.up)

@@ -30,7 +30,7 @@ class Obstacles():
 	def on_init(self):
 		self.geometry = BoxGeometry(size = (1, 1.5, 1))
 		self.material = SolidMaterial(
-			color = (0, 1, 1),
+			color = (1, 0, 0),
 			transparency = 0.2,
 		)
 		self.mesh = MeshInstanced(

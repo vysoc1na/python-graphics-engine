@@ -23,6 +23,7 @@ from components.entity_player import Player
 from components.entity_enemy import Enemy
 from components.cursor import Cursor
 from components.grass import Grass
+from components.water import Water
 
 renderer = Renderer()
 
@@ -83,12 +84,14 @@ grass = Grass(
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 )
+# Water
+water = Water(renderer)
 # Particles
 particles = Particles(
 	renderer,
 	position = (32, -1, 32),
 	radius = (32, 1, 32),
-    color = (0, 1, 0.5),
+    color = (1, 1, 0),
     transparency = 0.5,
 )
 
@@ -97,8 +100,10 @@ scene.children.append(player.mesh)
 scene.children.append(enemy.mesh)
 scene.children.append(terrain.mesh)
 scene.children.append(grass.mesh)
+scene.children.append(water.mesh)
 scene.children.append(cursor.mesh)
-scene.children.append(obstacles.mesh)
+# scene.children.append(obstacles.mesh)
+
 # compose particles scene
 scene.children.append(particles)
 
