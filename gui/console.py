@@ -26,6 +26,7 @@ class Console():
 		if len(self.elements) > self.elements_treshold:
 			element_to_remove = self.elements.pop(0)
 			element_to_remove.destroy()
+			del element_to_remove
 
 			index = 1
 			for element in self.elements:

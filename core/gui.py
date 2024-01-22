@@ -57,7 +57,7 @@ class GuiElement():
 		self.vertices = self.get_vertices()
 		self.texture_coords = self.get_texture_coords()
 		self.model = self.get_model()
-		if self.text:
+		if self.text != None:
 			self.text_texture = self.get_text_texture()
 			self.text_texture.use(1)
 
@@ -147,8 +147,12 @@ class GuiElement():
 		self.vao.render(moderngl.TRIANGLE_FAN)
 
 	def destroy(self):
+		# release vbo
 		self.vbo.release()
 		self.vao.release()
+		# release texture
+		if self.text != None:
+			self.text_texture.release()
 
 	def mouse_in_bound(self):
 		mouse_x, mouse_y = pygame.mouse.get_pos()
