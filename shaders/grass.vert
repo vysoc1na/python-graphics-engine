@@ -18,6 +18,20 @@ out float frag_transparency;
 out vec3 frag_position;
 out vec2 frag_texture_coords;
 
+vec4 perform_frustum_culling(vec4 position) {
+	vec4 v_position = projection * view * model * vec4(in_position, 1.0);
+	// to render edges of screen (near camera plane)
+	float offset = -5;
+
+	// is vertex in camera view?
+	if (abs(v_position.x) + offset <= v_position.w && abs(v_position.y) + offset <= v_position.w && v_position.z >= 0.0 && v_position.z + offset <= v_position.w) {
+		return v_position;
+	}
+
+	// offscreen coordinates are discarted
+	return vec4(2.0, 2.0, 2.0, 1.0);
+}
+
 void main() {
 	// grass specific shader
 	float bend_x = sin(in_position.y * (elapsed_time / 500));
@@ -28,7 +42,7 @@ void main() {
 	vec3 newPosition = in_position + vec3(bend_x, 0, bend_z);
 
 	// default shader
-	gl_Position = projection * view * model * vec4(newPosition, 1.0);
+	gl_Position = perform_frustum_culling(vec4(in_position, 1.0));
 
 	frag_normal = mat3(transpose(inverse(model))) * in_normal;
 	frag_color = vec4(in_color, 1);
