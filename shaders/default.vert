@@ -1,5 +1,12 @@
 #version 330
 
+// frustum culling
+#define OFFSET 0
+#define IS_IN_VIEW(p) (abs(p.x) + OFFSET <= p.w && abs(p.y) + OFFSET <= p.w && p.z >= 0 && p.z + OFFSET <= p.w)
+#define OFFSCREEN_POINT vec4(2, 2, 2, 1)
+#define TRANSFORM(p) IS_IN_VIEW(vec4(p)) ? p : OFFSCREEN_POINT
+// END frustum culling
+
 layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec3 in_normal;
 layout (location = 2) in vec2 texture_coords;
@@ -17,22 +24,8 @@ out float frag_transparency;
 out vec3 frag_position;
 out vec2 frag_texture_coords;
 
-vec4 perform_frustum_culling(vec4 position) {
-	vec4 v_position = projection * view * model * vec4(in_position, 1.0);
-	// to render edges of screen (near camera plane)
-	float offset = -5;
-
-	// is vertex in camera view?
-	if (abs(v_position.x) + offset <= v_position.w && abs(v_position.y) + offset <= v_position.w && v_position.z >= 0.0 && v_position.z + offset <= v_position.w) {
-		return v_position;
-	}
-
-	// offscreen coordinates are discarted
-	return vec4(2.0, 2.0, 2.0, 1.0);
-}
-
 void main() {
-	gl_Position = perform_frustum_culling(vec4(in_position, 1.0));
+	gl_Position = TRANSFORM(projection * view * model * vec4(in_position, 1.0));
 
 	frag_normal = mat3(transpose(inverse(model))) * in_normal;
 	frag_color = vec4(in_color, 1);
