@@ -17,56 +17,68 @@ uniform bool border_only = false;
 uniform float border_size = 0;
 uniform vec3 border_color = vec3(0, 0, 0);
 
-float hash(vec2 p)
-{
-	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+float random(float x) {
+	return fract(sin(x) * 10000);
 }
 
-float noise(vec2 p)
-{
-	vec2 i = floor(p);
-	vec2 f = fract(p);
-
-	vec2 u = f * f * (3.0 - 2.0 * f);
-
-	return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
-	mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+float noise(vec2 p) {
+	return random(p.x + p.y * 10000);
 }
 
-float smoothNoise(vec2 uv)
-{
-	float corners = (noise(uv + vec2(-1.0, -1.0)) + noise(uv + vec2(1.0, -1.0)) + noise(uv + vec2(-1.0, 1.0)) + noise(uv + vec2(1.0, 1.0))) / 16.0;
-	float sides = (noise(uv + vec2(-1.0, 0.0)) + noise(uv + vec2(1.0, 0.0)) + noise(uv + vec2(0.0, -1.0)) + noise(uv + vec2(0.0, 1.0))) / 8.0;
-	float center = noise(uv) / 4.0;
+vec2 sw(vec2 p) { return vec2(floor(p.x), floor(p.y)); }
+vec2 se(vec2 p) { return vec2(ceil(p.x), floor(p.y)); }
+vec2 nw(vec2 p) { return vec2(floor(p.x), ceil(p.y)); }
+vec2 ne(vec2 p) { return vec2(ceil(p.x), ceil(p.y)); }
 
-	return corners + sides + center;
+float smoothNoise(vec2 p) {
+	vec2 interp = smoothstep(0, 1, fract(p));
+	float s = mix(noise(sw(p)), noise(se(p)), interp.x);
+	float n = mix(noise(nw(p)), noise(ne(p)), interp.x);
+	return mix(s, n, interp.y);
 }
 
-float perlinNoise(vec2 p)
-{
-	return 0.5 + 0.5 * sin(10.0 * p.x + 10.0 * p.y + 0.1 * sin(5.0 * p.x + 5.0 * p.y));
+float fractalNoise(vec2 p) {
+	float x = 0;
+	x += smoothNoise(p);
+	x += smoothNoise(p * 2) / 2;
+	x /= 1 + 1 / 2;
+	return x;
+}
+
+float movingNoise(vec2 p) {
+	float time = elapsed_time / 3000;
+	float x = fractalNoise(p + time);
+	float y = fractalNoise(p - time);
+	return fractalNoise(p + vec2(x, y));
+}
+
+float nestedNoise(vec2 p) {
+	float x = movingNoise(p);
+	float y = movingNoise(p + 100);
+	return movingNoise(p + vec2(x, y));
+}
+
+float roundToDecimal(float value, float decimalPlace) {
+	float multiplier = pow(10.0, decimalPlace);
+	return round(value * multiplier) / multiplier;
 }
 
 void main() {
-	vec3 waterColor = vec3(0.0, 1.0, 1.0);
+	vec3 normal = normalize(frag_normal);
 
-	float time = elapsed_time / 1000;
-	float frequency1 = 1.0;
-	float frequency2 = 2.0;
-	float amplitude1 = 0.1;
-	float amplitude2 = 0.05;
+	vec3 light_direction = normalize(frag_position - light_position);
+	float diffuse_intensity = max(dot(normal, light_direction), 0.0);
 
-	float wave1 = amplitude1 * sin(time * frequency1);
-	float wave2 = amplitude2 * sin(time * frequency2);
+	vec3 ambient_light = ambient_color * frag_color.rgb;
+	vec3 diffuse_light = diffuse_color * frag_color.rgb * diffuse_intensity;
+	vec3 final_color = ambient_light + diffuse_light;
 
-	float displacement = wave1 + wave2;
+	final_color = vec3(pow(final_color, vec3(1.0 / 2.2)));
 
-	vec2 uv = vec2(frag_position.x, frag_position.z);
-	uv.x += displacement * 10;
+	// vec2 uv = vec2(frag_position.x, frag_position.z);
+	vec2 uv = vec2(roundToDecimal(frag_position.x - 0.5, 0), roundToDecimal(frag_position.z - 0.5, 0));
 
-	float noise = (noise(uv * 10) - 0.5);
+	float n = 0.3 * nestedNoise(uv);
 
-	vec3 finalColor = waterColor + vec3(noise);
-
-	color = vec4(finalColor, 1);
+	color = vec4(mix(vec3(final_color.rgb), vec3(final_color.rgb) * 0.5, n), frag_transparency);
 }

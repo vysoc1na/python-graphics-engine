@@ -22,7 +22,7 @@ class Water():
 		)
 		self.material = SolidMaterial(
 			color = (0, 1, 1),
-			transparency = 0.2,
+			transparency = 0.5,
 		)
 		self.mesh = Mesh(
 			geometry = self.geometry,
