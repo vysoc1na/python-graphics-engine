@@ -24,6 +24,10 @@ class Player(Entity):
 		self.spawn_point = glm.vec3(position) + glm.vec3(0.5, 0, 0.5)
 		# modify mesh
 		self.reshape_entity()
+		# state
+		self.ALIVE = 0
+		self.DEAD = 1
+		self.state = self.ALIVE
 		# register events
 		self.is_clicked = False
 		self.clicked_time = 0
@@ -35,16 +39,35 @@ class Player(Entity):
 		self.material.color = glm.vec3(0, 0, 1)
 
 	def change_color_on_action(self, geometry, material):
-		if len(self.path) > 0:
-			color_state = glm.vec3(0, 0.5, 1)
+		color_state = material.color
+		size_state = geometry.size
+		rotate_state = geometry.rotation
+
+		if self.state == self.DEAD:
+			color_state = glm.vec3(0.5, 0.5, 0.5)
+			size_state = glm.vec3(0.5, 0.1, 0.1)
+			rotate_state = glm.vec3(0, -45, 0)
 		else:
-			color_state = glm.vec3(0, 0, 1)
+			size_state = glm.vec3(0.1, 0.5, 0.1)
+			rotate_state = glm.vec3(0, 0, 0)
+			if len(self.path) > 0:
+				color_state = glm.vec3(0, 0.5, 1)
+			else:
+				color_state = glm.vec3(0, 0, 1)
+
+		if glm.length(geometry.size - size_state) > 0:
+			geometry.size = size_state
+			geometry.rotation = rotate_state
+			geometry.update_vertices()
 
 		if glm.length(material.color - color_state) > 0:
 			material.color = color_state
 			self.mesh.should_update = True
 
 	def on_click(self, geometry, material):
+		if self.state == self.DEAD:
+			return
+
 		if self.is_clicked == True:
 			if self.renderer.elapsed_time > self.clicked_time + 500:
 				self.is_clicked = False

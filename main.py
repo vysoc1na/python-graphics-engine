@@ -64,7 +64,7 @@ player = Player(
 # Enemy Entity
 enemy = Enemy(
 	renderer,
-	position = (32, 0, 32),
+	position = (33, 0, 32),
 	terrain_component = terrain,
 	obstacles_component = obstacles,
 	logger = console,
@@ -108,19 +108,32 @@ scene.children.append(cursor.mesh)
 scene.children.append(particles)
 
 # Button List
+def kill():
+	console.add('killing "player" 0/10')
+	player.state = player.DEAD
+	player.path = []
+	player.target = player.geometry.position - glm.vec3(0.5, 0, 0.5)
+
 def respawn():
-	console.add('respawn "player" at x: 32, z: 32')
+	console.add('respawn "player" 10/10 at x: 32, z: 32')
+	player.state = player.ALIVE
 	player.path = []
 	player.target = glm.vec3(32, 0, 32)
+
+def damage():
+	if enemy.state != enemy.DEAD and enemy.state != enemy.WAITING_DEAD:
+		enemy.take_damage = 1
 
 def close_window():
 	pygame.quit()
 	sys.exit()
 
+button_kill = Button(renderer, font, text = 'kill', on_click = kill, corner = 'TL')
 button_respawn = Button(renderer, font, text = 'respawn', on_click = respawn, corner = 'TL')
+button_damage = Button(renderer, font, text = 'damage', on_click = damage, corner = 'TL')
 button_quit = Button(renderer, font, text = 'quit', on_click = close_window, corner = 'TL')
 
-button_list = ButtonList(renderer, elements = [button_respawn, button_quit])
+button_list = ButtonList(renderer, elements = [button_kill, button_respawn, button_damage, button_quit])
 
 # compose gui
 gui.children.append(button_list)
