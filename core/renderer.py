@@ -70,6 +70,8 @@ class Renderer():
 		# water shader
 		with open('shaders/water.vert', 'r') as vertex_shader_file:
 			water_vertex_shader = vertex_shader_file.read()
+		with open('shaders/water.frag', 'r') as fragment_shader_file:
+			water_fragment_shader = fragment_shader_file.read()
 
 		# shaders dict
 		self.shaders = {
@@ -91,7 +93,7 @@ class Renderer():
 			),
 			'water': self.ctx.program(
 				vertex_shader = water_vertex_shader,
-				fragment_shader = default_fragment_shader,
+				fragment_shader = water_fragment_shader,
 			),
 		}
 
